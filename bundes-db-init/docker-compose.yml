@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'Thesis'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    
+
+  mongodb:
+    image: mongo
+    ports:
+      - '27017:27017'
+    
+
+  db-initializer:
+    build: ./
+    ports:
+      - 8082:8082
+    volumes:
+      - /Users/ariamahlooji/Desktop/bundes-data:/app/files/bundes-data
+    
+    depends_on:
+      - mongodb
+      - mysql
+    command: sh -c "sleep 10s ; python3 ./app.py"
+
+
+networks: 
+  default:  
+      name: backend-network
+      external: true
+ 

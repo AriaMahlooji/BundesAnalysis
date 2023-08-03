@@ -1,0 +1,5 @@
+import import_relational_data_service
+import import_images_service
+
+import_images_service.run()
+import_relational_data_service.run()

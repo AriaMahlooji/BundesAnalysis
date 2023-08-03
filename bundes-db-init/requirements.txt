@@ -1,0 +1,4 @@
+pymongo
+Pillow
+pandas
+mysql-connector-python
