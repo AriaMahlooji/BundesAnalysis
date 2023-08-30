@@ -3,35 +3,34 @@ package com.api.bundes.rest;
 import com.api.bundes.Entity.Event;
 import com.api.bundes.Entity.Match;
 import com.api.bundes.Entity.Team;
-import com.api.bundes.dto.EventFilter;
-import com.api.bundes.dto.EventsDistributionResponse;
-import com.api.bundes.dto.EventsResponse;
-import com.api.bundes.dto.MatchFilter;
-import com.api.bundes.service.AnalysisServiceImpl;
-import com.api.bundes.service.EventService;
-import com.api.bundes.service.MatchService;
-import com.api.bundes.service.TeamService;
+import com.api.bundes.Entity.TeamImage;
+import com.api.bundes.dto.*;
+import com.api.bundes.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TeamRestController {
     private TeamService teamService;
     private MatchService matchService;
     private EventService eventService;
     private AnalysisServiceImpl analysisService;
+    private TeamImageService teamImageService;
 
     public TeamRestController(TeamService teamService, MatchService matchService, EventService eventService,
-                              AnalysisServiceImpl analysisService) {
+                              AnalysisServiceImpl analysisService, TeamImageService teamImageService) {
         this.teamService = teamService;
         this.matchService = matchService;
         this.eventService = eventService;
         this.analysisService = analysisService;
+        this.teamImageService = teamImageService;
     }
 
     @GetMapping("/teams")
@@ -70,7 +69,9 @@ public class TeamRestController {
     }
 
     @GetMapping("/teams/{id}/matches")
-    public ResponseEntity<?> getTeamMatchesById(@PathVariable Integer id)
+    public ResponseEntity<?> getTeamMatchesById(@PathVariable Integer id,
+                                                @RequestParam(defaultValue = "0") Integer pageSize,
+                                                @RequestParam(defaultValue = "20") Integer pageNumber)
     {
 
         Optional<Team> team = teamService.findById(id);
@@ -79,7 +80,12 @@ public class TeamRestController {
             String errorMessage = "Team with id " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
-        return ResponseEntity.ok(matchService.findTeamMatches(id));
+
+        List<Match> matches = matchService.findTeamMatches(id);
+        List<Match> paginatedMatches = matchService.paginateMatches(matches, pageSize, pageNumber);
+
+
+        return ResponseEntity.ok(matchService.getMatchesTeamsLogos(paginatedMatches));
 
     }
     @GetMapping("/teams/{id}/matches/against")
@@ -149,6 +155,16 @@ public class TeamRestController {
         }
 
         return ResponseEntity.ok(analysisService.getSortedSubstitutionsAgainst(team.get(), eventFilter));
+    }
+
+    @GetMapping("/teams/{id}/getmatchesfinalresult")
+    public ResponseEntity<?> getMatchesFinalResultInfo(@PathVariable Integer id)
+    {
+        Optional<Team> team = teamService.findById(id);
+        List<Match> matches = matchService.findTeamMatches(team.get().getId()).stream().
+                filter(match -> !match.getHomeTeamScore().equals("pp") && !match.getAwayTeamScore()
+                        .equals("pp")).toList();
+        return ResponseEntity.ok(teamService.getTeamMathesFinalResult(matches,team.get()));
     }
 
 

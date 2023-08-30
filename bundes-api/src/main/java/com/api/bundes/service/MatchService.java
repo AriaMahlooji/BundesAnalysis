@@ -2,6 +2,7 @@ package com.api.bundes.service;
 
 import com.api.bundes.Entity.Match;
 import com.api.bundes.dto.EventResponseForSpecificMinute;
+import com.api.bundes.dto.MatchResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,5 +18,8 @@ public interface MatchService {
     EventResponseForSpecificMinute getMatchEventsByDesiredMinuteByMatchId(Integer id,
                                                                           Integer teamId,
                                                                           Integer desiredMinute);
+
+    List<Match> paginateMatches(List<Match> matches, Integer pageSize, Integer offset);
+    List<MatchResponse> getMatchesTeamsLogos(List<Match> matches);
 
 }

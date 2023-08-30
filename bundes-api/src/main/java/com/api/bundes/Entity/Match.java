@@ -1,13 +1,19 @@
 package com.api.bundes.Entity;
 
+import com.api.bundes.dto.TeamDTO;
+import com.api.bundes.service.TeamImageService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Entity
 @Table(name = "matches")
 public class Match {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -50,6 +56,18 @@ public class Match {
     @JoinColumn(name = "away_team_id", insertable = false, updatable = false)
     @JsonIgnore
     private Team awayTeam;
+
+    @Transient
+    @JsonProperty("homeTeam")
+    public TeamDTO getHomeTeamDto() {
+        return new TeamDTO(homeTeam.getName());
+    }
+
+    @Transient
+    @JsonProperty("awayTeam")
+    public TeamDTO getAwayTeamDto() {
+        return new TeamDTO( awayTeam.getName());
+    }
 
 
     public String getSeason() {
@@ -131,4 +149,5 @@ public class Match {
     public void setAwayTeam(Team awayTeam) {
         this.awayTeam = awayTeam;
     }
+
 }

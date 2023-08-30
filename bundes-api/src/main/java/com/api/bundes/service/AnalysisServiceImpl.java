@@ -15,13 +15,18 @@ public class AnalysisServiceImpl implements AnalysisService {
     private final TeamRepository teamRepository;
     private MatchService matchService;
     private EventService eventService;
+    private TeamService teamService;
 
 
-    public AnalysisServiceImpl(TeamRepository teamRepository, MatchService matchService, EventService eventService) {
+    public AnalysisServiceImpl(TeamRepository teamRepository,
+                               MatchService matchService, EventService eventService,
+                               TeamService teamService) {
 
         this.teamRepository = teamRepository;
         this.matchService = matchService;
         this.eventService = eventService;
+        this.teamService = teamService;
+
     }
 
     @Override
@@ -155,5 +160,58 @@ public class AnalysisServiceImpl implements AnalysisService {
         return substitutionEvaluations;
     }
 
+    public List<Team> getTeamsForSeasons(List<String> seasons)
+    {
+        List<Match> matches = matchService.findAll();
+        List<Match> filteredMatches = matches.stream()
+                .filter(match -> seasons.contains(match.getSeason())).toList();
 
+        List<Match> nonPostponedMatches = filteredMatches.stream().
+                filter(match -> !match.getHomeTeamScore().equals("pp") &&
+                        !match.getAwayTeamScore().equals("pp")).toList();
+
+        List<Team> homeTeams = nonPostponedMatches.stream().map(match -> match.getHomeTeam()).toList();
+        List<Team> awayTeams = nonPostponedMatches.stream().map(match -> match.getAwayTeam()).toList();
+        List<Team> allInvolvedTeams = new ArrayList<>();
+
+        for(Team team: homeTeams)
+        {
+            if(!allInvolvedTeams.stream().map(team1 -> team1.getId()).toList().contains(team.getId()))
+            {
+                allInvolvedTeams.add(team);
+            }
+        }
+
+        for(Team team: awayTeams)
+        {
+            if(!allInvolvedTeams.stream().map(team1 -> team1.getId()).toList().contains(team.getId()))
+            {
+                allInvolvedTeams.add(team);
+            }
+        }
+        return allInvolvedTeams;
+    }
+    @Override
+    public List<TeamMatchesFinalResult> getLeagueStanding(List<String> seasons) {
+        List<TeamMatchesFinalResult> standingInfo = new ArrayList<>();
+        List<Team> allInvolvedTeams = getTeamsForSeasons(seasons);
+
+        for(Team team:allInvolvedTeams)
+        {
+            List<Match> matches = this.matchService.findTeamMatches(team.getId());
+            List<Match> nonPostponedMatches = matches.stream().
+                    filter(match -> !match.getHomeTeamScore().equals("pp") &&
+                            !match.getAwayTeamScore().equals("pp")).toList();
+
+            List<Match> matchesFilteredBySeason = nonPostponedMatches.stream()
+                    .filter(match -> seasons.contains(match.getSeason())).toList();
+
+            standingInfo.add(this.teamService.getTeamMathesFinalResult(matchesFilteredBySeason, team));
+        }
+
+        List<TeamMatchesFinalResult> sortedStandingInfo = standingInfo.stream()
+                .sorted(Comparator.comparing(TeamMatchesFinalResult::getPoints).reversed()).toList();
+
+        return sortedStandingInfo;
+    }
 }

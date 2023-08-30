@@ -2,18 +2,25 @@ package com.api.bundes.service;
 
 import com.api.bundes.Entity.Event;
 import com.api.bundes.Entity.Match;
+import com.api.bundes.Entity.TeamImage;
 import com.api.bundes.dao.MatchRepository;
 import com.api.bundes.dto.EventResponseForSpecificMinute;
+import com.api.bundes.dto.MatchResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MatchServiceImpl implements MatchService {
     private final MatchRepository matchRepository;
+    private final TeamImageService teamImageService;
 
-    public MatchServiceImpl(MatchRepository matchRepository) {
+    public MatchServiceImpl(MatchRepository matchRepository, TeamImageService teamImageService)
+    {
+        this.teamImageService = teamImageService;
         this.matchRepository = matchRepository;
     }
 
@@ -61,5 +68,40 @@ public class MatchServiceImpl implements MatchService {
                 beforeMinuteByEvents, afterMinuteByEvents, beforeMinuteOnEvents, afterMinuteOnEvents
         );
         return  eventResponseForSpecificMinute;
+    }
+
+    @Override
+    public List<Match> paginateMatches(List<Match> matches, Integer pageSize, Integer pageNumber) {
+        if(pageSize * pageNumber > matches.size())
+        {
+            pageNumber = 1;
+        }
+        return matches.subList((pageNumber-1)*pageSize, Math.min(pageNumber*pageSize, matches.size()));
+    }
+
+    @Override
+    public List<MatchResponse> getMatchesTeamsLogos(List<Match> matches) {
+        List<MatchResponse> matchesWithLogos = new ArrayList<>();
+        matches.forEach(match ->{
+            String homeTeamLogo="";
+            String awayTeamLogo="";
+
+            Optional<TeamImage> homeTeamImage = teamImageService.findByName(match.getHomeTeam().getName());
+            Optional<TeamImage> awayTeamImage = teamImageService.findByName(match.getAwayTeam().getName());
+
+            if(!homeTeamImage.isEmpty())
+            {
+                homeTeamLogo = Base64.getEncoder().encodeToString(homeTeamImage.get().getImage());
+            }
+
+            if(!awayTeamImage.isEmpty())
+            {
+                awayTeamLogo = Base64.getEncoder().encodeToString(awayTeamImage.get().getImage());
+            }
+
+            matchesWithLogos.add(new MatchResponse(match, homeTeamLogo, awayTeamLogo));
+        });
+
+        return matchesWithLogos;
     }
 }

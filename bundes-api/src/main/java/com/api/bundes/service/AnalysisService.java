@@ -2,10 +2,7 @@ package com.api.bundes.service;
 
 import com.api.bundes.Entity.Event;
 import com.api.bundes.Entity.Team;
-import com.api.bundes.dto.EventFilter;
-import com.api.bundes.dto.EventsDistributionResponse;
-import com.api.bundes.dto.EventsResponse;
-import com.api.bundes.dto.SubstitutionEvaluation;
+import com.api.bundes.dto.*;
 
 import java.util.List;
 
@@ -15,5 +12,5 @@ public interface AnalysisService {
 
     EventsDistributionResponse getTeamEventsDistributionAgainst(Integer id, EventFilter eventFilter);
     List<SubstitutionEvaluation> getSortedSubstitutionsAgainst(Team team, EventFilter eventFilter);
-
+    List<TeamMatchesFinalResult> getLeagueStanding(List<String> seasons);
 }
