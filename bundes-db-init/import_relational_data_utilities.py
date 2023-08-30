@@ -140,6 +140,8 @@ def connect_to_mysql():
     return cnx
 
 def get_team_id(team_name, cnx):
+    if team_name.endswith("x2"):
+        team_name = team_name.rstrip("x2")
     get_team_id_query = f"SELECT id FROM teams WHERE name = '{team_name}'"
     cursor = cnx.cursor()
     cursor.execute(get_team_id_query)
