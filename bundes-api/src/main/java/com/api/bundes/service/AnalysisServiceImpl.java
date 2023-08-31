@@ -3,6 +3,7 @@ package com.api.bundes.service;
 import com.api.bundes.Entity.Event;
 import com.api.bundes.Entity.Match;
 import com.api.bundes.Entity.Team;
+import com.api.bundes.Entity.TeamImage;
 import com.api.bundes.dao.TeamRepository;
 import com.api.bundes.dto.*;
 import org.springframework.stereotype.Service;
@@ -16,16 +17,19 @@ public class AnalysisServiceImpl implements AnalysisService {
     private MatchService matchService;
     private EventService eventService;
     private TeamService teamService;
+    private TeamImageService teamImageService;
 
 
     public AnalysisServiceImpl(TeamRepository teamRepository,
                                MatchService matchService, EventService eventService,
-                               TeamService teamService) {
+                               TeamService teamService,
+                               TeamImageService teamImageService) {
 
         this.teamRepository = teamRepository;
         this.matchService = matchService;
         this.eventService = eventService;
         this.teamService = teamService;
+        this.teamImageService = teamImageService;
 
     }
 
@@ -191,6 +195,20 @@ public class AnalysisServiceImpl implements AnalysisService {
         }
         return allInvolvedTeams;
     }
+
+    public List<TeamMatchesFinalResult> setLeagueStandingTeamsLogos(List<TeamMatchesFinalResult> teamStandings)
+    {
+        teamStandings.forEach(team-> {
+            String teamLogo="";
+            Optional<TeamImage> teamImage = teamImageService.findByName(team.getTeam().getName());
+            if(!teamImage.isEmpty())
+            {
+                teamLogo = Base64.getEncoder().encodeToString(teamImage.get().getImage());
+            }
+            team.setTeamLogoUrl(teamLogo);
+        });
+        return teamStandings;
+    }
     @Override
     public List<TeamMatchesFinalResult> getLeagueStanding(List<String> seasons) {
         List<TeamMatchesFinalResult> standingInfo = new ArrayList<>();
@@ -212,6 +230,9 @@ public class AnalysisServiceImpl implements AnalysisService {
         List<TeamMatchesFinalResult> sortedStandingInfo = standingInfo.stream()
                 .sorted(Comparator.comparing(TeamMatchesFinalResult::getPoints).reversed()).toList();
 
-        return sortedStandingInfo;
+        List<TeamMatchesFinalResult> sortedStandingInfoLogosIncluded =
+                setLeagueStandingTeamsLogos(sortedStandingInfo);
+
+        return sortedStandingInfoLogosIncluded;
     }
 }

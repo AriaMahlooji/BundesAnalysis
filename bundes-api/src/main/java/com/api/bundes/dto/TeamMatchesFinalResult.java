@@ -16,6 +16,8 @@ public class TeamMatchesFinalResult {
     public int receivedGoalsCount;
     public int points;
 
+    private String teamLogoUrl;
+
     public TeamMatchesFinalResult(Team team, List<String> seasons, int wonCount, int lostCount, int drawCount, int scoredGoalsCount, int receivedGoalsCount) {
         this.team = team;
         this.seasons = seasons;
@@ -25,6 +27,14 @@ public class TeamMatchesFinalResult {
         this.scoredGoalsCount = scoredGoalsCount;
         this.receivedGoalsCount = receivedGoalsCount;
         this.points = wonCount*3 + this.drawCount;
+    }
+
+    public String getTeamLogoUrl() {
+        return teamLogoUrl;
+    }
+
+    public void setTeamLogoUrl(String teamLogoUrl) {
+        this.teamLogoUrl = teamLogoUrl;
     }
 
     public Team getTeam() {
