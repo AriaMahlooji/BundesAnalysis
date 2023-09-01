@@ -8,10 +8,9 @@ import com.api.bundes.dto.EventResponseForSpecificMinute;
 import com.api.bundes.dto.MatchResponse;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class MatchServiceImpl implements MatchService {
@@ -103,5 +102,21 @@ public class MatchServiceImpl implements MatchService {
         });
 
         return matchesWithLogos;
+    }
+
+    @Override
+    public List<Match> sortMatchesBasedOnDate(List<Match> matches) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+        List<Match> sortedMatches = matches.stream()
+                .sorted(Comparator.comparing(match -> {
+                    try {
+                        return dateFormat.parse(match.getDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }))
+                .toList();
+        return sortedMatches;
     }
 }

@@ -68,10 +68,11 @@ public class TeamRestController {
         return ResponseEntity.ok(team.get().getEvents());
     }
 
-    @GetMapping("/teams/{id}/matches")
+    @PutMapping("/teams/{id}/matches")
     public ResponseEntity<?> getTeamMatchesById(@PathVariable Integer id,
                                                 @RequestParam(defaultValue = "0") Integer pageSize,
-                                                @RequestParam(defaultValue = "20") Integer pageNumber)
+                                                @RequestParam(defaultValue = "20") Integer pageNumber,
+                                                @RequestBody SeasonFilter seasons)
     {
 
         Optional<Team> team = teamService.findById(id);
@@ -81,9 +82,10 @@ public class TeamRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
 
-        List<Match> matches = matchService.findTeamMatches(id);
-        List<Match> paginatedMatches = matchService.paginateMatches(matches, pageSize, pageNumber);
-
+        List<Match> matches = matchService.findTeamMatches(id).stream()
+                .filter(match -> seasons.getSeasons().contains(match.getSeason())).toList();
+        List<Match> sortedMatches = matchService.sortMatchesBasedOnDate(matches);
+        List<Match> paginatedMatches = matchService.paginateMatches(sortedMatches, pageSize, pageNumber);
 
         return ResponseEntity.ok(matchService.getMatchesTeamsLogos(paginatedMatches));
 

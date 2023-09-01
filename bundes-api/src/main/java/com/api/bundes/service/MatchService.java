@@ -22,4 +22,6 @@ public interface MatchService {
     List<Match> paginateMatches(List<Match> matches, Integer pageSize, Integer offset);
     List<MatchResponse> getMatchesTeamsLogos(List<Match> matches);
 
+    List<Match> sortMatchesBasedOnDate(List<Match> matches);
+
 }

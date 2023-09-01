@@ -2,33 +2,47 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import Header from "@/components/Header";
 import TopCards from "@/components/TopCards";
-import BarChart from "@/components/BarChart";
-import RecentOrders from "@/components/RecentOrders";
-import { RxFace } from "react-icons/rx";
 import TeamsStanding from "@/components/TeamsStanding";
 import { useEffect, useState } from "react";
 import MatchList from "@/components/MatchList";
 import { getStandings } from "@/data_fetchers/home_page_fetchers/standing_fetcher";
 import { getDefaultMatches } from "@/data_fetchers/home_page_fetchers/default_match_fetcher";
 import SideContent from "@/components/SideContent";
+import { usePageNumber } from "@/context APIs/PageNumberContext";
+import { useSeason } from "@/context APIs/SeasonHomePageContext";
+import {useTeamId} from "@/context APIs/TeamIdContext"
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
 
   const [standingData, setStandingData] = useState();
+  const {seasons, setSeasons} = useSeason();
+  const {teamId, setTeamId} = useTeamId();
+
   useEffect(()=>{
-    getStandings().then(response => response.json())
+    console.log(teamId);
+  },[teamId])
+
+
+  useEffect(()=>{
+    console.log(seasons);
+  },[seasons]);
+
+  useEffect(()=>{
+    getStandings(seasons).then(response => response.json())
     .then(data => setStandingData(data))
     .catch(error => console.error('Error fetching data:', error));
-  },[]);
+  },[seasons]);
 
   const[matches, setMatches] = useState([]);
+  const { pageNumber, setPageNumber } = usePageNumber();
+
   useEffect(()=>{
-    getDefaultMatches().then(response => response.json())
+    getDefaultMatches(teamId,pageNumber, seasons).then(response => response.json())
     .then(data => setMatches(data))
     .catch(error => console.error('Error fetching data:', error));
-  },[])
+  },[pageNumber, seasons, teamId])
 
 
   return (

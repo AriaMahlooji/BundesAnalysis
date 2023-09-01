@@ -1,9 +1,19 @@
-import Sidebar from '@/components/Sidebar'
-import '@/styles/globals.css'
+import Sidebar from "@/components/Sidebar";
+import { PageNumberProvider } from "@/context APIs/PageNumberContext";
+import { SeasonProvider } from "@/context APIs/SeasonHomePageContext";
+import { TeamIdProvider } from "@/context APIs/TeamIdContext";
+import "@/styles/globals.css";
 
 export default function App({ Component, pageProps }) {
-  return( 
-  <Sidebar>
-    <Component {...pageProps} />
-  </Sidebar>)
+  return (
+    <TeamIdProvider>
+      <PageNumberProvider>
+        <SeasonProvider>
+          <Sidebar>
+            <Component {...pageProps} />
+          </Sidebar>
+        </SeasonProvider>
+      </PageNumberProvider>
+    </TeamIdProvider>
+  );
 }
