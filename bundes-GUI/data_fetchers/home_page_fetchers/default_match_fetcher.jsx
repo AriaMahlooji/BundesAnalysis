@@ -1,4 +1,4 @@
-export function getDefaultMatches(teamId, pageNumber, seasons)
+export function getDefaultMatches(teamId, pageNumber, seasons, finalStatus)
 {
   
     return fetch(`http://localhost:8080/api/teams/${teamId}/matches?pageSize=15&pageNumber=${pageNumber}`,{
@@ -6,6 +6,8 @@ export function getDefaultMatches(teamId, pageNumber, seasons)
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({"seasons":seasons})
+      body: JSON.stringify({
+        "seasons":seasons,
+        "finalStatus":finalStatus})
     })
 }

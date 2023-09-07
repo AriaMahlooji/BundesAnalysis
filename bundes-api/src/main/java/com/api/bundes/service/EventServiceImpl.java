@@ -52,6 +52,20 @@ public class EventServiceImpl implements EventService{
         return events.stream().filter(event -> event.isAGoal()).collect(Collectors.toList()).stream().map(
                 event -> event.getGoalEngagedPlayers()).collect(Collectors.toList());
     }
+
+    @Override
+    public Integer getTime(String eventDetail) {
+        String[] parts = eventDetail.split("[^0-9]+");
+        int time = Integer.parseInt(parts[0]);
+        if (eventDetail.contains("+")) {
+            for (int i = 1; i < parts.length - 1; i++) {
+                if (parts[i].equals("w")) {
+                    time += Integer.parseInt(parts[i + 1]);
+                }
+            }
+        }
+        return time;
+    }
 }
 
 

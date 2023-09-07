@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FiInfo } from "react-icons/fi";
 import { getMatchFinalStatusFor } from "@/functions/getMatchFinalStatusFor";
+import { useChosenMatch } from "@/context APIs/ChosenMatchContext";
 
 const Match = ({ match, chosenTeamId }) => {
+  const {chosenMatch, setChosenMatch} = useChosenMatch();
+
   return (
     <div>
       <div
@@ -34,7 +37,7 @@ const Match = ({ match, chosenTeamId }) => {
             <div>-</div>
             <div>{match.match.awayTeamScore}</div>
           </div>
-          <FiInfo className="border border-blue-800" />
+          <FiInfo onClick={()=>{setChosenMatch(match); }} className="hover:cursor-pointer transition-transform transform hover:scale-110" />
         </div>
         <div className="flex flex-col flex-1 border border-red-200 items-center justify-center ">
           <div className="">

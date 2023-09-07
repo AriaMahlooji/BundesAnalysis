@@ -3,18 +3,18 @@ package com.api.bundes.rest;
 import com.api.bundes.Entity.Event;
 import com.api.bundes.Entity.Match;
 import com.api.bundes.Entity.Team;
+import com.api.bundes.dto.EventFilter;
 import com.api.bundes.dto.EventResponseForSpecificMinute;
 import com.api.bundes.dto.EventsResponse;
 import com.api.bundes.dto.GoalEngagedPlayers;
+import com.api.bundes.service.EventService;
 import com.api.bundes.service.MatchService;
 import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,9 +23,12 @@ import java.util.stream.Collectors;
 public class MatchRestController {
 
     private MatchService matchService;
+    private EventService eventService;
 
-    public MatchRestController(MatchService matchService) {
+    public MatchRestController(MatchService matchService, EventService eventService) {
         this.matchService = matchService;
+        this.eventService = eventService;
+
     }
 
     @GetMapping("/matches")
@@ -55,6 +58,16 @@ public class MatchRestController {
             String errorMessage = "match with id " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
+
+        Comparator<Event> eventComparator = (event1, event2) -> {
+            int time1 = eventService.getTime(event1.getEventDetail());
+            int time2 = eventService.getTime(event2.getEventDetail());
+            return Integer.compare(time1, time2);
+        };
+
+        List<Event> events = match.get().getEvents();
+        List<Event> sortedEvents = new ArrayList<>(events);
+        Collections.sort(events, eventComparator);
         return ResponseEntity.ok(match.get().getEvents());
     }
 

@@ -12,6 +12,7 @@ public interface EventService {
     public List<Event> findByMatchId(Integer id);
     List<Event> findTeamByEvents(@Param("teamId") Integer teamId, List<Integer> matchIds,List<String> eventTitles);
     List<Event> findTeamOnEvents(@Param("teamId") Integer teamId, List<Integer> matchIds, List<String> eventTitles);
-     List<GoalEngagedPlayers> getGoalEngagedPlayers(List<Event> events);
+    List<GoalEngagedPlayers> getGoalEngagedPlayers(List<Event> events);
+    Integer getTime(String eventDetail);
 
 }

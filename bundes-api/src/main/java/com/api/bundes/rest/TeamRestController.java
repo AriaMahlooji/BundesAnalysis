@@ -72,7 +72,7 @@ public class TeamRestController {
     public ResponseEntity<?> getTeamMatchesById(@PathVariable Integer id,
                                                 @RequestParam(defaultValue = "0") Integer pageSize,
                                                 @RequestParam(defaultValue = "20") Integer pageNumber,
-                                                @RequestBody SeasonFilter seasons)
+                                                @RequestBody MatchFilter matchFilter)
     {
 
         Optional<Team> team = teamService.findById(id);
@@ -83,7 +83,9 @@ public class TeamRestController {
         }
 
         List<Match> matches = matchService.findTeamMatches(id).stream()
-                .filter(match -> seasons.getSeasons().contains(match.getSeason())).toList();
+                .filter(match -> matchFilter.getSeasons().contains(match.getSeason()) &&
+                        matchFilter.getFinalStatus().contains(matchService.getFinalStatusOfMatchFor(id, match)))
+                .toList();
         List<Match> sortedMatches = matchService.sortMatchesBasedOnDate(matches);
         List<Match> paginatedMatches = matchService.paginateMatches(sortedMatches, pageSize, pageNumber);
 

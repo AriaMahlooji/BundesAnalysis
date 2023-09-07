@@ -10,40 +10,64 @@ import { getDefaultMatches } from "@/data_fetchers/home_page_fetchers/default_ma
 import SideContent from "@/components/SideContent";
 import { usePageNumber } from "@/context APIs/PageNumberContext";
 import { useSeason } from "@/context APIs/SeasonHomePageContext";
-import {useTeamId} from "@/context APIs/TeamIdContext"
+import { useTeamId } from "@/context APIs/TeamIdContext";
+import { useMatch } from "@/context APIs/MatchContext";
+import { useFinalStatus } from "@/context APIs/FinalStatusContext";
+import CustomModal from "@/components/modal/CustomModal";
+import ChosenMatchModal from "@/components/ChosenMatchModal";
+import { useChosenMatch } from "@/context APIs/ChosenMatchContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-
   const [standingData, setStandingData] = useState();
-  const {seasons, setSeasons} = useSeason();
-  const {teamId, setTeamId} = useTeamId();
+  const { seasons, setSeasons } = useSeason();
+  const { teamId, setTeamId } = useTeamId();
+  const { finalStatus, setFinalStatus } = useFinalStatus();
+  const { chosenMatch, setChosenMatch } = useChosenMatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(teamId);
-  },[teamId])
+  }, [teamId]);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     console.log(seasons);
-  },[seasons]);
+  }, [seasons]);
 
-  useEffect(()=>{
-    getStandings(seasons).then(response => response.json())
-    .then(data => setStandingData(data))
-    .catch(error => console.error('Error fetching data:', error));
-  },[seasons]);
+  useEffect(() => {
+    getStandings(seasons)
+      .then((response) => response.json())
+      .then((data) => setStandingData(data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [seasons]);
 
-  const[matches, setMatches] = useState([]);
+  const { matches, setMatches } = useMatch();
   const { pageNumber, setPageNumber } = usePageNumber();
 
-  useEffect(()=>{
-    getDefaultMatches(teamId,pageNumber, seasons).then(response => response.json())
-    .then(data => setMatches(data))
-    .catch(error => console.error('Error fetching data:', error));
-  },[pageNumber, seasons, teamId])
+  useEffect(() => {
+    getDefaultMatches(teamId, pageNumber, seasons, finalStatus)
+      .then((response) => response.json())
+      .then((data) => setMatches(data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [pageNumber, seasons, teamId, finalStatus]);
 
+  const [chosenMatchModalIsOpen, setChosenMatchIsOpen] = useState(false);
+  useEffect(() => {
+    if (chosenMatch) {
+      setChosenMatchIsOpen(true);
+    } else {
+      setChosenMatchIsOpen(false);
+    }
+  }, [chosenMatch]);
+
+  const openModal = () => {
+    setChosenMatchIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setChosenMatchIsOpen(false);
+    setChosenMatch();
+  };
 
   return (
     <>
@@ -59,10 +83,16 @@ export default function Home() {
         <TopCards />
         <div className="border p-4 grid md:grid-cols-3 grid-cols-1 gap-4">
           <div className="col-span-2">
-            <TeamsStanding standingInfo={standingData}/>
+            <TeamsStanding standingInfo={standingData} />
           </div>
-          <SideContent title="Matches" ><MatchList matches={matches}></MatchList></SideContent>
+          <SideContent title="Matches">
+            <MatchList matches={matches}></MatchList>
+          </SideContent>
         </div>
+        <ChosenMatchModal
+          isOpen={chosenMatchModalIsOpen}
+          onClose={closeModal}
+        ></ChosenMatchModal>
       </main>
     </>
   );

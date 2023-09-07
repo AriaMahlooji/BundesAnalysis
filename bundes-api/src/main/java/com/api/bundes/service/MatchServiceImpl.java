@@ -71,9 +71,9 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> paginateMatches(List<Match> matches, Integer pageSize, Integer pageNumber) {
-        if(pageSize * pageNumber > matches.size())
+        if(pageSize > matches.size())
         {
-            pageNumber = 1;
+            pageSize = matches.size();
         }
         return matches.subList((pageNumber-1)*pageSize, Math.min(pageNumber*pageSize, matches.size()));
     }
@@ -118,5 +118,47 @@ public class MatchServiceImpl implements MatchService {
                 }))
                 .toList();
         return sortedMatches;
+    }
+
+    @Override
+    public Boolean isPostponed(Match match) {
+        if(match.getHomeTeamScore().equals("pp") || match.getAwayTeamScore().equals("pp"))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String getFinalStatusOfMatchFor(Integer teamId, Match match) {
+        if(isPostponed(match))
+        {
+            return "pp";
+        }
+
+        String finalStatus="";
+        Integer homeTeamId = match.getHomeTeamId();
+        Integer awayTeamId = match.getAwayTeamId();
+        Integer homeTeamScore = Integer.parseInt(match.getHomeTeamScore());
+        Integer awayTeamScore = Integer.parseInt(match.getAwayTeamScore());
+        if(awayTeamScore == homeTeamScore)
+        {
+            finalStatus = "draw";
+        }
+        if(match.getHomeTeamId() == teamId)
+        {
+            if(homeTeamScore > awayTeamScore)
+                finalStatus = "won";
+            if(homeTeamScore < awayTeamScore)
+                finalStatus = "lost";
+        }
+        if(match.getAwayTeamId() == teamId)
+        {
+            if(homeTeamScore < awayTeamScore)
+                finalStatus = "won";
+            if(homeTeamScore > awayTeamScore)
+                finalStatus = "lost";
+        }
+        return finalStatus;
     }
 }

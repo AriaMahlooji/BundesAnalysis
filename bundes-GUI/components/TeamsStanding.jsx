@@ -1,30 +1,53 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Image from "next/image";
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownSection, DropdownItem, Button} from "@nextui-org/react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownSection,
+  DropdownItem,
+  Button,
+} from "@nextui-org/react";
 import { useSeason } from "@/context APIs/SeasonHomePageContext";
 import { usePageNumber } from "@/context APIs/PageNumberContext";
 import { useTeamId } from "@/context APIs/TeamIdContext";
+import { useFinalStatus } from "@/context APIs/FinalStatusContext";
 
 const TeamsStanding = ({ standingInfo }) => {
   const { pageNumber, setPageNumber } = usePageNumber();
-  const { teamId, setTeamId} = useTeamId();
-  const {seasons, setSeasons} = useSeason();
-  const setChosenSeason=(key)=>{
+  const { teamId, setTeamId } = useTeamId();
+  const { seasons, setSeasons } = useSeason();
+  const { finalStatus, setFinalStatus } = useFinalStatus();
+  const setChosenSeason = (key) => {
     setPageNumber(1);
-    if(key === "All")
-    {
-      setSeasons(["15/16", "16/17", "17/18", "18/19", "19/20", "20/21", "21/22"])
+    if (key === "All") {
+      setSeasons([
+        "15/16",
+        "16/17",
+        "17/18",
+        "18/19",
+        "19/20",
+        "20/21",
+        "21/22",
+      ]);
+    } else {
+      setSeasons([key]);
     }
-    else
-    {
-      setSeasons([key])
-    }
-  }
+  };
 
-  const setChosenTeam=(id)=>{
+  const setChosenTeam = (id) => {
     setTeamId(id);
-  }
-  const seasonsList = ["15/16", "16/17", "17/18", "18/19", "19/20", "20/21", "21/22", "All"];
+  };
+  const seasonsList = [
+    "15/16",
+    "16/17",
+    "17/18",
+    "18/19",
+    "19/20",
+    "20/21",
+    "21/22",
+    "All",
+  ];
   if (!standingInfo) {
     return null;
   }
@@ -35,19 +58,24 @@ const TeamsStanding = ({ standingInfo }) => {
           <div className="mb-6 flex">
             <Dropdown className="bg-gray-300 rounded-lg border border-gray-500">
               <DropdownTrigger>
-                <Button className="border bg-gray-200 border-gray-500 rounded-lg pr-3 pl-3"> Season: {seasons.length >1 ? "All": seasons} </Button>
+                <Button className="border bg-gray-200 border-gray-500 rounded-lg pr-3 pl-3">
+                  {" "}
+                  Season: {seasons.length > 1 ? "All" : seasons}{" "}
+                </Button>
               </DropdownTrigger>
-              <DropdownMenu onAction={(key) => setChosenSeason(key)} className="w-20" aria-label="Static Actions">
-                {seasonsList.map((season)=>(
+              <DropdownMenu
+                onAction={(key) => setChosenSeason(key)}
+                className="w-20"
+                aria-label="Static Actions"
+              >
+                {seasonsList.map((season) => (
                   <DropdownItem key={season}>{season}</DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
           </div>
           <div className="my-1 p-2 grid md:grid-cols-12">
-            <div className="text-sm flex md:col-span-1 justify-center">
-              #
-            </div>
+            <div className="text-sm flex md:col-span-1 justify-center">#</div>
             <div className="text-sm flex md:col-span-7  ">Team</div>
             <div className="grid md:grid-cols-7 md:col-span-4">
               <div className=" text-sm flex justify-center">P</div>
@@ -93,16 +121,44 @@ const TeamsStanding = ({ standingInfo }) => {
                     </div>
                   </div>
                   <div className="grid md:grid-cols-7 md:col-span-4">
-                    <div onClick={()=>setChosenTeam(info.team.id)} className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300">
+                    <div
+                      onClick={() => {
+                        setChosenTeam(info.team.id);
+                        setFinalStatus(["won", "draw", "lost"]);
+                        setPageNumber(1);
+                      }}
+                      className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300"
+                    >
                       {info.drawCount + info.wonCount + info.lostCount}
                     </div>
-                    <div className=" text-sm flex items-center justify-center">
+                    <div
+                      onClick={() => {
+                        setChosenTeam(info.team.id);
+                        setFinalStatus(["won"]);
+                        setPageNumber(1);
+                      }}
+                      className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300 "
+                    >
                       {info.wonCount}
                     </div>
-                    <div className=" text-sm flex items-center justify-center ">
+                    <div
+                      onClick={() => {
+                        setChosenTeam(info.team.id);
+                        setFinalStatus(["lost"]);
+                        setPageNumber(1);
+                      }}
+                      className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300"
+                    >
                       {info.lostCount}
                     </div>
-                    <div className="text-sm flex items-center justify-center">
+                    <div
+                      onClick={() => {
+                        setChosenTeam(info.team.id);
+                        setFinalStatus(["draw"]);
+                        setPageNumber(1);
+                      }}
+                      className="text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300"
+                    >
                       {info.drawCount}
                     </div>
                     <div className=" md:col-span-2 flex justify-center">

@@ -1,31 +1,48 @@
 package com.api.bundes.rest;
 
-import com.api.bundes.Entity.Player;
-import com.api.bundes.Entity.Team;
+import com.api.bundes.Entity.*;
+import com.api.bundes.dao.PlayerRepository;
+import com.api.bundes.dao.TeamRepository;
+import com.api.bundes.dto.PlayerFilter;
+import com.api.bundes.dto.PlayerImageDTO;
+import com.api.bundes.service.PlayerImageService;
 import com.api.bundes.service.PlayerService;
+import com.api.bundes.service.TeamService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
+
 public class PlayerRestController {
     private PlayerService playerService;
+    private TeamService teamService;
+    private TeamRepository teamRepository;
+    private PlayerRepository playerRepository;
 
-    public PlayerRestController(PlayerService playerService) {
+    private PlayerImageService playerImageService;
+
+    public PlayerRestController(PlayerService playerService,
+                                TeamService teamService,
+                                TeamRepository teamRepository, PlayerRepository playerRepository,
+                                PlayerImageService playerImageService) {
         this.playerService = playerService;
+        this.teamService = teamService;
+        this.teamRepository = teamRepository;
+        this.playerRepository = playerRepository;
+        this.playerImageService = playerImageService;
     }
 
     @GetMapping("/players")
     public ResponseEntity<?> getAllPlayers()
     {
-
         List<Player> players = playerService.findAll();
         return ResponseEntity.ok(players);
     }
@@ -33,7 +50,6 @@ public class PlayerRestController {
     @GetMapping("/players/name/{name}")
     public ResponseEntity<?> getPlayerById(@PathVariable String name)
     {
-
         Optional<Player> player = playerService.findByName(name);
         if(player.isEmpty())
         {
@@ -46,7 +62,6 @@ public class PlayerRestController {
     @GetMapping("/players/name/{name}/playsins")
     public ResponseEntity<?> getPlayerPlaysInsByName(@PathVariable String name)
     {
-
         Optional<Player> player = playerService.findByName(name);
         if(player.isEmpty())
         {
@@ -55,4 +70,28 @@ public class PlayerRestController {
         }
         return ResponseEntity.ok(player.get().getPlaysIn());
     }
+
+    @PutMapping("/players/image")
+    public PlayerImageDTO getPlayerImage(@RequestBody PlayerFilter playerFilter)
+    {
+
+       String playerFullName = playerService.getFullNameOutOfAbbreviatedName(playerFilter);
+       if(playerFullName==null)
+        {
+            return new PlayerImageDTO("", "", playerFilter.getAbbreviatedName());
+        }
+       else
+       {
+           System.out.println(playerFullName.concat(".jpg"));
+           Optional<PlayerImage> playerImage = playerImageService.findByName(playerFullName.concat(".jpg"));
+           if(!playerImage.isEmpty())
+           {
+               return new PlayerImageDTO(Base64.getEncoder().encodeToString(playerImage.get().getImage()), playerFullName, playerFilter.getAbbreviatedName());
+           }
+           return new PlayerImageDTO("", playerFullName, playerFilter.getAbbreviatedName());
+       }
+
+    }
+
+
 }

@@ -37,13 +37,13 @@ public class Player {
     }
 
     @JsonIgnore
-    public String getPlayerNameAbbreviation(String name) {
-        if (name.split(" ").length == 1) {
-            return name;
+    public String getPlayerNameAbbreviation() {
+        if (this.name.split(" ").length == 1) {
+            return this.name;
         }
 
         StringBuilder abbreviatedName = new StringBuilder();
-        String[] nameParts = name.split(" ");
+        String[] nameParts = this.name.split(" ");
 
         for (int i = 0; i < nameParts.length; i++) {
             if (i != nameParts.length - 1) {

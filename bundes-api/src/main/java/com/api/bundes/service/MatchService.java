@@ -21,7 +21,9 @@ public interface MatchService {
 
     List<Match> paginateMatches(List<Match> matches, Integer pageSize, Integer offset);
     List<MatchResponse> getMatchesTeamsLogos(List<Match> matches);
-
     List<Match> sortMatchesBasedOnDate(List<Match> matches);
+
+    Boolean isPostponed(Match match);
+    String getFinalStatusOfMatchFor(Integer teamId, Match match);
 
 }
