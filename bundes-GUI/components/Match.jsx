@@ -18,7 +18,7 @@ const Match = ({ match, chosenTeamId }) => {
             : "bg-gray-200"
         }`}
       >
-        <div className="flex flex-col flex-1 border border-red-200 items-center justify-center">
+        <div className="flex flex-col flex-1  items-center justify-center">
           <Image
             className="rounded-[50%]"
             src={`data:image/png;base64,${match.homeTeamLogo}`}
@@ -30,7 +30,7 @@ const Match = ({ match, chosenTeamId }) => {
             {match.match.homeTeam.teamName}
           </div>
         </div>
-        <div className=" flex flex-col  border border-red-200 justify-between items-center space-y-3">
+        <div className=" flex flex-col   justify-between items-center space-y-3">
           <div className="text-xs">{match.match.date}</div>
           <div className="flex justify-between items-center">
             <div>{match.match.homeTeamScore}</div>
@@ -39,7 +39,7 @@ const Match = ({ match, chosenTeamId }) => {
           </div>
           <FiInfo onClick={()=>{setChosenMatch(match); }} className="hover:cursor-pointer transition-transform transform hover:scale-110" />
         </div>
-        <div className="flex flex-col flex-1 border border-red-200 items-center justify-center ">
+        <div className="flex flex-col flex-1 items-center justify-center ">
           <div className="">
             <Image
               className="rounded-[50%]"

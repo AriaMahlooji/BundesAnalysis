@@ -10,6 +10,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        '2xl': '1.5rem',  // This is the default 'xl' size
+        '3xl': '2rem',    // Create a custom size '3xl' with a larger font size
+      },
       colors: 
       {
         golden: '#FFD700',

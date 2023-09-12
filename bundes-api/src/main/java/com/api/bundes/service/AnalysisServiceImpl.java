@@ -47,19 +47,34 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     @Override
-    public EventsResponse getTeamEventsAgainst(Integer id, EventFilter eventFilter) {
+    public EventsResponse getTeamEventsAgainst(Integer id, EventFilter eventFilter, Integer pageSize, Integer pageNumber) {
         List<Integer> matchIds=(matchService.findMatchesAgainst(id, eventFilter.getOpponentsIds(),
                 eventFilter.getSeasons())).stream().map(Match::getId).collect(Collectors.toList());
 
         List<Event> byEvents = eventService.findTeamByEvents(id, matchIds,
                 eventFilter.getEventTitles());
+        List<Event> paginatedByEvents = eventService.paginateEvents(byEvents, pageSize, pageNumber);
+
         List<Event> onEvents = eventService.findTeamOnEvents(id, matchIds,
                 eventFilter.getEventTitles());
-        EventsResponse eventsResponse = new EventsResponse(byEvents, onEvents);
-        return eventsResponse;
+        List<Event> paginatedOnEvents = eventService.paginateEvents(onEvents, pageSize, pageNumber);
+
+        if(eventFilter.getSide().equals("by")) {
+            EventsResponse eventsResponse = new EventsResponse(paginatedByEvents);
+            return eventsResponse;
+        }
+        if(eventFilter.getSide().equals("on")) {
+            EventsResponse eventsResponse = new EventsResponse(paginatedOnEvents);
+            return eventsResponse;
+        }
+        else{
+            EventsResponse eventsResponse = new EventsResponse(byEvents, onEvents);
+            return eventsResponse;
+        }
+
     }
 
-    @Override
+   /* @Override
     public EventsDistributionResponse getTeamEventsDistributionAgainst(Integer id, EventFilter eventFilter) {
         EventsResponse eventsResponse = getTeamEventsAgainst(id, eventFilter);
         Integer[] byEventDistribution = getEventDistribution(eventsResponse.getByEvents());
@@ -68,6 +83,11 @@ public class AnalysisServiceImpl implements AnalysisService {
         EventsDistributionResponse eventsDistributionResponse = new EventsDistributionResponse(eventsResponse,
                 byEventDistribution, onEventDistribution);
         return eventsDistributionResponse;
+    }*/
+
+    @Override
+    public EventsDistributionResponse getTeamEventsDistributionAgainst(Integer id, EventFilter eventFilter) {
+        return null;
     }
 
     public Double calculateDecayEffect(Integer timeDifference, Boolean isSubstitutionInvolved)
@@ -153,6 +173,7 @@ public class AnalysisServiceImpl implements AnalysisService {
                 negativeMetrics );
     }
 
+    /*
     @Override
     public List<SubstitutionEvaluation> getSortedSubstitutionsAgainst(Team team, EventFilter eventFilter) {
         EventsResponse eventsResponse = getTeamEventsAgainst(team.getId(), eventFilter);
@@ -162,6 +183,11 @@ public class AnalysisServiceImpl implements AnalysisService {
         Collections.sort(substitutionEvaluations,
                 Comparator.comparingDouble(SubstitutionEvaluation::getEvaluationScore));
         return substitutionEvaluations;
+    }*/
+
+    @Override
+    public List<SubstitutionEvaluation> getSortedSubstitutionsAgainst(Team team, EventFilter eventFilter) {
+        return null;
     }
 
     public List<Team> getTeamsForSeasons(List<String> seasons)
@@ -200,9 +226,12 @@ public class AnalysisServiceImpl implements AnalysisService {
     {
         teamStandings.forEach(team-> {
             String teamLogo="";
+            String teamName = team.getTeam().getName();
+
             Optional<TeamImage> teamImage = teamImageService.findByName(team.getTeam().getName());
             if(!teamImage.isEmpty())
             {
+
                 teamLogo = Base64.getEncoder().encodeToString(teamImage.get().getImage());
             }
             team.setTeamLogoUrl(teamLogo);

@@ -1,6 +1,7 @@
 package com.api.bundes.service;
 
 import com.api.bundes.Entity.Event;
+import com.api.bundes.Entity.Match;
 import com.api.bundes.dto.GoalEngagedPlayers;
 import org.springframework.data.repository.query.Param;
 
@@ -14,5 +15,6 @@ public interface EventService {
     List<Event> findTeamOnEvents(@Param("teamId") Integer teamId, List<Integer> matchIds, List<String> eventTitles);
     List<GoalEngagedPlayers> getGoalEngagedPlayers(List<Event> events);
     Integer getTime(String eventDetail);
+    List<Event> paginateEvents(List<Event> events, Integer pageSize, Integer pageNumber);
 
 }

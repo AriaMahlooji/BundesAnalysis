@@ -12,12 +12,19 @@ import { useSeason } from "@/context APIs/SeasonHomePageContext";
 import { usePageNumber } from "@/context APIs/PageNumberContext";
 import { useTeamId } from "@/context APIs/TeamIdContext";
 import { useFinalStatus } from "@/context APIs/FinalStatusContext";
+import { useGoal } from "@/context APIs/MatchContext copy";
+import { useSide } from "@/context APIs/SideContext";
+import { useMatchOrGoal } from "@/context APIs/MatchOrGoalContext";
 
 const TeamsStanding = ({ standingInfo }) => {
   const { pageNumber, setPageNumber } = usePageNumber();
   const { teamId, setTeamId } = useTeamId();
   const { seasons, setSeasons } = useSeason();
   const { finalStatus, setFinalStatus } = useFinalStatus();
+  const { goals, setGoals } = useGoal();
+  const { side, setSide } = useSide();
+  const { matchOrGoal, setMatchOrGoal } = useMatchOrGoal();
+
   const setChosenSeason = (key) => {
     setPageNumber(1);
     if (key === "All") {
@@ -68,8 +75,8 @@ const TeamsStanding = ({ standingInfo }) => {
                 className="w-20"
                 aria-label="Static Actions"
               >
-                {seasonsList.map((season) => (
-                  <DropdownItem key={season}>{season}</DropdownItem>
+                {seasonsList.map((season, i) => (
+                  <DropdownItem className="p-1 hover:bg-white hover:rounded-lg" key={season}>{season}</DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
@@ -90,8 +97,8 @@ const TeamsStanding = ({ standingInfo }) => {
           </div>
           <hr></hr>
           <ul>
-            {standingInfo.map((info) => (
-              <li>
+            {standingInfo.map((info, i) => (
+              <li key={i}>
                 <div className="my-3 p-2 grid md:grid-cols-12 rounded-lg bg-gray-100">
                   <div className="text-sm flex items-center md:col-span-1 justify-center ">
                     <span
@@ -126,6 +133,7 @@ const TeamsStanding = ({ standingInfo }) => {
                         setChosenTeam(info.team.id);
                         setFinalStatus(["won", "draw", "lost"]);
                         setPageNumber(1);
+                        setMatchOrGoal("match");
                       }}
                       className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300"
                     >
@@ -136,8 +144,9 @@ const TeamsStanding = ({ standingInfo }) => {
                         setChosenTeam(info.team.id);
                         setFinalStatus(["won"]);
                         setPageNumber(1);
+                        setMatchOrGoal("match");
                       }}
-                      className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300 "
+                      className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-green-300 "
                     >
                       {info.wonCount}
                     </div>
@@ -146,8 +155,9 @@ const TeamsStanding = ({ standingInfo }) => {
                         setChosenTeam(info.team.id);
                         setFinalStatus(["lost"]);
                         setPageNumber(1);
+                        setMatchOrGoal("match");
                       }}
-                      className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300"
+                      className=" text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-red-300"
                     >
                       {info.lostCount}
                     </div>
@@ -156,18 +166,37 @@ const TeamsStanding = ({ standingInfo }) => {
                         setChosenTeam(info.team.id);
                         setFinalStatus(["draw"]);
                         setPageNumber(1);
+                        setMatchOrGoal("match");
                       }}
                       className="text-sm flex items-center justify-center hover:cursor-pointer hover:rounded-lg hover:bg-gray-300"
                     >
                       {info.drawCount}
                     </div>
                     <div className=" md:col-span-2 flex justify-center">
-                      <div className="text-sm flex items-center rounded bg-green-200 mr-1">
-                        {info.scoredGoalsCount}{" "}
+                      <div
+                        onClick={() => {
+                          setChosenTeam(info.team.id);
+                          setSide("by");
+                          setPageNumber(1);
+                          setMatchOrGoal("goal");
+                        }}
+                        className="text-sm flex items-center justify-center rounded mr-1 hover:cursor-pointer  hover:bg-green-200"
+                      >
+                        {info.scoredGoalsCount}
                       </div>
-                      <div className="text-sm flex items-center rounded bg-red-200">
-                        {" "}
-                        {info.receivedGoalsCount}
+                      <span className="text-sm flex items-center justify-center  mr-1">
+                        :
+                      </span>
+                      <div
+                        onClick={() => {
+                          setChosenTeam(info.team.id);
+                          setSide("on");
+                          setPageNumber(1);
+                          setMatchOrGoal("goal");
+                        }}
+                        className="text-sm flex items-center justify-center rounded hover:cursor-pointer hover:bg-red-200"
+                      >
+                        {" "+info.receivedGoalsCount}
                       </div>
                     </div>
                     <div className="text-sm flex items-center justify-center">

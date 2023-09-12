@@ -1,6 +1,7 @@
 package com.api.bundes.service;
 
 import com.api.bundes.Entity.Event;
+import com.api.bundes.Entity.Match;
 import com.api.bundes.dao.EventRepository;
 import com.api.bundes.dto.GoalEngagedPlayers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,16 @@ public class EventServiceImpl implements EventService{
             }
         }
         return time;
+    }
+
+    @Override
+    public List<Event> paginateEvents(List<Event> events, Integer pageSize, Integer pageNumber) {
+            if(pageSize > events.size())
+            {
+                pageSize = events.size();
+            }
+            return events.subList((pageNumber-1)*pageSize, Math.min(pageNumber*pageSize, events.size()));
+
     }
 }
 

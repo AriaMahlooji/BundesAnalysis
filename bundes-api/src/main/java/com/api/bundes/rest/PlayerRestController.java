@@ -90,8 +90,17 @@ public class PlayerRestController {
            }
            return new PlayerImageDTO("", playerFullName, playerFilter.getAbbreviatedName());
        }
-
     }
 
+    @GetMapping("/players/{name}/image")
+    public PlayerImageDTO getPlayerImageByFullName(@PathVariable String name)
+    {
+        Optional<PlayerImage> playerImage = playerImageService.findByName(name.concat(".jpg"));
+        if(!playerImage.isEmpty())
+        {
+            return new PlayerImageDTO(Base64.getEncoder().encodeToString(playerImage.get().getImage()), name, "");
+        }
+        return new PlayerImageDTO("", name, "");
+    }
 
 }

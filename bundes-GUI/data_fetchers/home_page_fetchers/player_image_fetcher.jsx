@@ -11,3 +11,13 @@ export function getplayerImage(season, teamId, playerName)
         "abbreviatedName":playerName})
     })
 }
+
+export function getPlayerImageByFullName(name)
+{
+  return fetch(`http://localhost:8080/api/players/${name}/image`,{
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  })
+}

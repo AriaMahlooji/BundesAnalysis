@@ -5,7 +5,6 @@ import { GiGoalKeeper } from "react-icons/gi";
 import { PiSneakerMoveFill } from "react-icons/pi";
 
 const GoalEvent = ({ event }) => {
-  console.log(event);
   return (
     <div
       className={`flex pr-16 pl-16 ${

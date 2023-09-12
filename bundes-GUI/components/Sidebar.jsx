@@ -5,6 +5,8 @@ import {RxSketchLogo, RxDashboard, RxPerson} from "react-icons/rx";
 import { FiSettings} from "react-icons/fi";
 import {HiOutlineShoppingBag} from "react-icons/hi";
 import { useRouter } from "next/router";
+import {BiLineChart} from "react-icons/bi";
+import {BsPersonFillGear} from "react-icons/bs"
 
 
 
@@ -27,12 +29,12 @@ const Sidebar = ({ children }) => {
           </Link>
           <Link href="/customers">
             <div className={` hover:bg-gray-300  my-4 p-3 rounded-lg inline-block ${router.asPath ==="/customers" ? "bg-gray-400": "bg-gray-100"}`}>
-              <RxPerson size={20}/>
+              <BiLineChart size={20}/>
             </div>
           </Link>
           <Link href="/orders">
             <div className={` hover:bg-gray-300  my-4 p-3 rounded-lg inline-block ${router.asPath ==="/orders" ? "bg-gray-400": "bg-gray-100"}`}>
-              <HiOutlineShoppingBag size={20}/>
+              <BsPersonFillGear size={20}/>
             </div>
           </Link>
           <Link href="/settings">

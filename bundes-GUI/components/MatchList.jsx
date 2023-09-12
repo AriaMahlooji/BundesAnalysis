@@ -17,7 +17,6 @@ const MatchList = ({ matches }) => {
   };
   if(!matches)
   {
-    console.log("sss")
     return;
   }
   return (
@@ -43,9 +42,9 @@ const MatchList = ({ matches }) => {
         </div>
       </div>
       <ul className="space-y-2">
-        {matches.map((match) => (
-          <li>
-            <Match chosenTeamId={teamId} match={match}></Match>
+        {matches.map((match, i) => (
+          <li key={i}>
+            <Match key={i} chosenTeamId={teamId} match={match}></Match>
           </li>
         ))}
       </ul>

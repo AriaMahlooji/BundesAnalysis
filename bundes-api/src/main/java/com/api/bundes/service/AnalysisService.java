@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AnalysisService {
     Integer[] getEventDistribution(List<Event> events);
-    EventsResponse getTeamEventsAgainst(Integer id, EventFilter eventFilter);
+    EventsResponse getTeamEventsAgainst(Integer id, EventFilter eventFilter, Integer pageSize, Integer pageNumber);
 
     EventsDistributionResponse getTeamEventsDistributionAgainst(Integer id, EventFilter eventFilter);
     List<SubstitutionEvaluation> getSortedSubstitutionsAgainst(Team team, EventFilter eventFilter);

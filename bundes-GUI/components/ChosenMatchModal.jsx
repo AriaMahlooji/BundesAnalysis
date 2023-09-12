@@ -7,28 +7,25 @@ import Image from "next/image";
 import { getMatchEvents } from "@/data_fetchers/home_page_fetchers/match_events_fetcher";
 import GoalEvent from "./GoalEvent";
 import SubtitutionEvent from "./SubtitutionEvent";
-
+import FoulEvent from "./FoulEvent";
 
 Modal.setAppElement("#__next"); // Set the root element for screen readers (replace #__next with your root element id)
 
 const ChosenMatchModal = ({ isOpen, onClose, children }) => {
-
   const [sectionToBeShown, setSectionToBeShown] = useState("goals");
   const { chosenMatch, setChosenMatch } = useChosenMatch({});
   useEffect(() => {
-    console.log(chosenMatch);
   }, [chosenMatch]);
 
   const [events, setEvents] = useState([]);
-  useEffect(()=>{
-    if(chosenMatch)
-    {
+  useEffect(() => {
+     if (chosenMatch) {
       getMatchEvents(chosenMatch.match.id)
-      .then((response) => response.json())
-      .then((data) => setEvents(data))
-      .catch((error) => console.error("Error fetching data:", error));
+        .then((response) => response.json())
+        .then((data) => setEvents(data))
+        .catch((error) => console.error("Error fetching data:", error));
     }
-  },[chosenMatch?.match.id]);
+  }, [chosenMatch?.match.id]);
 
   return (
     <Modal
@@ -42,10 +39,11 @@ const ChosenMatchModal = ({ isOpen, onClose, children }) => {
         <div className="flex flex-col p-3 space-y-2">
           <div className="flex items-end justify-end">
             <AiOutlineCloseCircle
-              onClick={onClose}
+              onClick={()=>{onClose();}}
               className="cursor-pointer text-red-800"
             />
           </div>
+          <div className="flex justify-center items-center">Match highlights</div>
           {chosenMatch && (
             <div>
               <div
@@ -87,44 +85,79 @@ const ChosenMatchModal = ({ isOpen, onClose, children }) => {
             </div>
           )}
 
-          <div class=" border-gray-200 dark:border-gray-700 flex items-center justify-center">
-            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center  text-gray-500 dark:text-gray-400">
-              <li class="mr-2"  onClick={()=>setSectionToBeShown("goals")}>
+          <div className=" border-gray-200 dark:border-gray-700 flex items-center justify-center">
+            <ul className="flex flex-wrap -mb-px text-sm font-medium text-center  text-gray-500 dark:text-gray-400">
+              <li className="mr-2" onClick={() => setSectionToBeShown("goals")}>
                 <a
                   href="#"
-                  class={`inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg ${sectionToBeShown === "goals"?"text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500": "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} group`}
+                  className={`inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg ${
+                    sectionToBeShown === "goals"
+                      ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500"
+                      : "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                  } group`}
                 >
                   Goals
                 </a>
               </li>
-              <li class="mr-2" onClick={()=>setSectionToBeShown("substitutions")}>
+              <li
+                className="mr-2"
+                onClick={() => setSectionToBeShown("substitutions")}
+              >
                 <a
                   href="#"
-                  class={`inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg ${sectionToBeShown === "substitutions"?"text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500": "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} group`}
+                  className={`inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg ${
+                    sectionToBeShown === "substitutions"
+                      ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500"
+                      : "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                  } group`}
                   aria-current="page"
                 >
-                 
                   Substitutions
                 </a>
               </li>
-              <li class="mr-2" onClick={()=>setSectionToBeShown("fouls")}>
+              <li className="mr-2" onClick={() => setSectionToBeShown("fouls")}>
                 <a
                   href="#"
-                  class={`inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg ${sectionToBeShown === "fouls"?"text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500": "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} group`}
+                  className={`inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg ${
+                    sectionToBeShown === "fouls"
+                      ? "text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500"
+                      : "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                  } group`}
                 >
                   Fouls
                 </a>
               </li>
             </ul>
           </div>
-            {events && sectionToBeShown ==="goals" && <div className="flex flex-col space-y-2">
-              {events.filter(event=> ["Goal", "Penalty", "Own goal"].includes(event.title))
-                .map((event)=>(<GoalEvent event={event}></GoalEvent>))}
-              </div>}
-            {events && sectionToBeShown ==="substitutions" && <div className="flex flex-col space-y-2">
-              {events.filter(event=> ["Substitution"].includes(event.title))
-                .map((event)=>(<SubtitutionEvent event={event}></SubtitutionEvent>))}
-              </div>}
+          {events && sectionToBeShown === "goals" && (
+            <div className="flex flex-col space-y-2">
+              {events
+                .filter((event) =>
+                  ["Goal", "Penalty", "Own goal"].includes(event.title)
+                )
+                .map((event, i) => (
+                  <GoalEvent key={i} event={event}></GoalEvent>
+                ))}
+            </div>
+          )}
+          {events && sectionToBeShown === "substitutions" && (
+            <div className="flex flex-col space-y-2">
+              {events
+                .filter((event) => ["Substitution"].includes(event.title))
+                .map((event, i) => (
+                  <SubtitutionEvent key={i} event={event}></SubtitutionEvent>
+                ))}
+            </div>
+          )}
+          {events && sectionToBeShown === "fouls" && (
+            <div className="flex flex-col space-y-2">
+              {events
+                .filter((event) => ["Yellow card","2nd Yellow card (Red)","Red card"].includes(event.title))
+                .map((event,i) => (
+                  <FoulEvent key={i} event={event}></FoulEvent>
+                ))}
+            </div>
+          )}
         </div>
       </div>
     </Modal>

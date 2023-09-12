@@ -12,7 +12,6 @@ const SubtitutionEvent = ({ event }) => {
 
   useEffect(() => {
     if (event) {
-      console.log(event.season, event.teamId, playerIn);
       getplayerImage(event.season, event.teamId, playerIn)
         .then((response) => response.json())
         .then((data) => setPlayerInImage(data.playerImageUrl))
@@ -23,7 +22,7 @@ const SubtitutionEvent = ({ event }) => {
         .then((data) => setPlayerOutImage(data.playerImageUrl))
         .catch((error) => console.error("Error fetching data:", error));
     }
-  }, [event]);
+  }, [event.eventDetail.split("In: ")[1].split("\nOut:")[0]]);
 
   return (
     <div
@@ -32,34 +31,30 @@ const SubtitutionEvent = ({ event }) => {
       }`}
     >
       <div className="flex w-1/2 justify-between items-center pr-6 pl-6 p-3 pb-3   bg-gray-200 rounded-lg space-x-3">
-        <div className="flex flex-col">
-          <div className="flex items-center justify-center">
-            <Image
-              className="rounded-[50%]"
-              src={`data:image/png;base64,${playerInImage}`}
-              width="30"
-              height="30"
-              alt="user"
-            ></Image>
-          </div>
+        <div className="flex flex-col flex-1 items-center justify-center">
+          <Image
+            className="rounded-[50%]"
+            src={`data:image/png;base64,${playerInImage}`}
+            width="30"
+            height="30"
+            alt="user"
+          ></Image>
           <span className="text-xs text-green-800">{playerIn}</span>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-1 flex-col">
           <div className="flex justify-center items-center">
             <LuAlarmClock />
             <span className="text-xs">{event.eventDetail.split("In:")[0]}</span>
           </div>
         </div>
-        <div className="flex flex-col">
-          <div className="flex items-center justify-center">
-            <Image
-              className="rounded-[50%]"
-              src={`data:image/png;base64,${playerOutImage}`}
-              width="30"
-              height="30"
-              alt="user"
-            ></Image>
-          </div>
+        <div className="flex flex-col flex-1 items-center justify-center">
+          <Image
+            className="rounded-[50%]"
+            src={`data:image/png;base64,${playerOutImage}`}
+            width="30"
+            height="30"
+            alt="user"
+          ></Image>
           <span className="text-xs text-red-800">{playerOut}</span>
         </div>
       </div>

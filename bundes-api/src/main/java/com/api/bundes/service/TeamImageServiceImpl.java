@@ -23,6 +23,9 @@ public class TeamImageServiceImpl implements TeamImageService{
 
     @Override
     public Optional<TeamImage> findByName(String name) {
+        name=name.replace("-","'");
+        name=name.replace("ö","ö");
+        name=name.replace("ü","ü");
         return teamImageRepository.findByName(name);
     }
 }

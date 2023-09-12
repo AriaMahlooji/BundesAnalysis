@@ -38,6 +38,10 @@ public class Player {
 
     @JsonIgnore
     public String getPlayerNameAbbreviation() {
+        if(this.name.equals("Arturo Vidal"))
+        {
+            return this.name;
+        }
         if (this.name.split(" ").length == 1) {
             return this.name;
         }

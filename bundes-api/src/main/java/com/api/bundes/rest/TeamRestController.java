@@ -107,8 +107,10 @@ public class TeamRestController {
         return ResponseEntity.ok(matchService.findMatchesAgainst(id, matchFilter.getOpponentsIds(),
                                                                  matchFilter.getSeasons()));
     }
-    @GetMapping("/teams/{id}/matches/against/events")
+    @PutMapping("/teams/{id}/matches/against/events")
     public ResponseEntity<?> getTeamEventsAgainst(@PathVariable Integer id,
+                                                  @RequestParam(defaultValue = "0") Integer pageSize,
+                                                  @RequestParam(defaultValue = "20") Integer pageNumber,
                                                    @RequestBody EventFilter eventFilter)
     {
         Optional<Team> team = teamService.findById(id);
@@ -117,7 +119,7 @@ public class TeamRestController {
             String errorMessage = "Team with id " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
-        return ResponseEntity.ok(this.analysisService.getTeamEventsAgainst(id, eventFilter));
+        return ResponseEntity.ok(this.analysisService.getTeamEventsAgainst(id, eventFilter, pageSize, pageNumber));
     }
     @GetMapping("/teams/{id}/matches/against/events/distribution")
     public ResponseEntity<?> getTeamEventsDistributionAgainst(@PathVariable Integer id,
@@ -171,6 +173,14 @@ public class TeamRestController {
         return ResponseEntity.ok(teamService.getTeamMathesFinalResult(matches,team.get()));
     }
 
-
-
+    @GetMapping("/teams/{id}/image")
+    public ResponseEntity<?> getTeamImageById(@PathVariable Integer id)
+    {
+        Optional<Team> team = teamService.findById(id);
+        if(team.isEmpty())
+        {
+            return null;
+        }
+        return ResponseEntity.ok(teamImageService.findByName(team.get().getName()));
+    }
 }

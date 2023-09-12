@@ -16,6 +16,11 @@ import { useFinalStatus } from "@/context APIs/FinalStatusContext";
 import CustomModal from "@/components/modal/CustomModal";
 import ChosenMatchModal from "@/components/ChosenMatchModal";
 import { useChosenMatch } from "@/context APIs/ChosenMatchContext";
+import DetailedGoalList from "@/components/DetailedGoalList";
+import { useGoal } from "@/context APIs/MatchContext copy";
+import { getEvents } from "@/data_fetchers/home_page_fetchers/event_fetcher";
+import { useSide } from "@/context APIs/SideContext";
+import { useMatchOrGoal } from "@/context APIs/MatchOrGoalContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,13 +30,14 @@ export default function Home() {
   const { teamId, setTeamId } = useTeamId();
   const { finalStatus, setFinalStatus } = useFinalStatus();
   const { chosenMatch, setChosenMatch } = useChosenMatch();
+  const {goals, setGoals} = useGoal();
+  const {side, setSide}= useSide();
+  const {matchOrGoal, setMatchOrGoal} = useMatchOrGoal();
 
   useEffect(() => {
-    console.log(teamId);
   }, [teamId]);
 
   useEffect(() => {
-    console.log(seasons);
   }, [seasons]);
 
   useEffect(() => {
@@ -50,6 +56,13 @@ export default function Home() {
       .then((data) => setMatches(data))
       .catch((error) => console.error("Error fetching data:", error));
   }, [pageNumber, seasons, teamId, finalStatus]);
+
+  useEffect(() => {
+    getEvents(teamId, pageNumber, seasons, side, ["Goal", "Own goal", "Penalty"])
+      .then((response) => response.json())
+      .then((data) => setGoals(data.events))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [pageNumber, seasons, teamId, side]);
 
   const [chosenMatchModalIsOpen, setChosenMatchIsOpen] = useState(false);
   useEffect(() => {
@@ -86,7 +99,8 @@ export default function Home() {
             <TeamsStanding standingInfo={standingData} />
           </div>
           <SideContent title="Matches">
-            <MatchList matches={matches}></MatchList>
+            {matchOrGoal ==="goal" && <DetailedGoalList goals={goals}/>}
+            {matchOrGoal ==="match" && <MatchList matches={matches}></MatchList>}
           </SideContent>
         </div>
         <ChosenMatchModal
@@ -97,3 +111,5 @@ export default function Home() {
     </>
   );
 }
+
+//<MatchList matches={matches}></MatchList>
