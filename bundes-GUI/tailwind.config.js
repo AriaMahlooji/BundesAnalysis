@@ -10,9 +10,13 @@ module.exports = {
   ],
   theme: {
     extend: {
+      height: ['responsive', 'fractional'],
       fontSize: {
-        '2xl': '1.5rem',  // This is the default 'xl' size
-        '3xl': '2rem',    // Create a custom size '3xl' with a larger font size
+        '2xl': '1.5rem',  
+        '3xl': '2rem',    
+        '9xl': '6rem',
+        '15xl': '10rem',
+        '30xl': '20rem'  
       },
       colors: 
       {

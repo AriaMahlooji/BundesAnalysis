@@ -6,7 +6,10 @@ import { FiSettings} from "react-icons/fi";
 import {HiOutlineShoppingBag} from "react-icons/hi";
 import { useRouter } from "next/router";
 import {BiLineChart} from "react-icons/bi";
-import {BsPersonFillGear} from "react-icons/bs"
+import {RiTeamFill} from "react-icons/ri";
+import {TeamPlayerIcon} from "@/SVGs/TeamPlayer";
+import {IoIosFootball} from "react-icons/io";
+
 
 
 
@@ -18,7 +21,7 @@ const Sidebar = ({ children }) => {
         <div className="flex flex-col items-center">
           <Link href="">
             <div className="bg-purple-900 text-white p-3 rounded-lg inline-block">
-              <RxSketchLogo size={20}/>
+              <IoIosFootball size={30}/>
             </div>
           </Link>
           <span className="border-b-[1px] border-gray-400 w-full p-2"></span>
@@ -27,14 +30,14 @@ const Sidebar = ({ children }) => {
               <RxDashboard size={20}/>
             </div>
           </Link>
-          <Link href="/customers">
-            <div className={` hover:bg-gray-300  my-4 p-3 rounded-lg inline-block ${router.asPath ==="/customers" ? "bg-gray-400": "bg-gray-100"}`}>
+          <Link href="/">
+            <div className={` hover:bg-gray-300  my-4 p-3 rounded-lg inline-block ${router.asPath ==="/analysis" ? "bg-gray-400": "bg-gray-100"}`}>
               <BiLineChart size={20}/>
             </div>
           </Link>
-          <Link href="/orders">
-            <div className={` hover:bg-gray-300  my-4 p-3 rounded-lg inline-block ${router.asPath ==="/orders" ? "bg-gray-400": "bg-gray-100"}`}>
-              <BsPersonFillGear size={20}/>
+          <Link href="/players">
+            <div className={` hover:bg-gray-300  my-4 p-3 rounded-lg inline-block ${router.asPath ==="playersEdit" ? "bg-gray-400": "bg-gray-100"}`}>
+              <TeamPlayerIcon size={20}/>
             </div>
           </Link>
           <Link href="/settings">

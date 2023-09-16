@@ -34,7 +34,7 @@ const FoulEvent = ({ event }) => {
             height="30"
             alt="user"
           ></Image>
-          <span>{event.eventDetail.split("\n")[1]}</span>
+          <span>{playerName.length>10?playerName.split(" ")[playerName.split(" ").length-1]: playerName}</span>
         </div>
         <div className=" p-2 space-y-2 text-xs flex flex-col items-center justify-center">
           <LuAlarmClock className=" text-lg " />

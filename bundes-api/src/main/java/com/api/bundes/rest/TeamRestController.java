@@ -183,4 +183,14 @@ public class TeamRestController {
         }
         return ResponseEntity.ok(teamImageService.findByName(team.get().getName()));
     }
+    @GetMapping("/teams/image/{name}")
+    public ResponseEntity<?> getTeamImageByName(@PathVariable String name)
+    {
+        Optional<TeamImage> teamImageUrl = teamImageService.findByName(name);
+        if(!teamImageUrl.isEmpty())
+        {
+            return ResponseEntity.ok(new TeamImageDTO(name,teamImageUrl.get().getImage()));
+        }
+        return ResponseEntity.ok(new TeamImageDTO(name, null));
+    }
 }

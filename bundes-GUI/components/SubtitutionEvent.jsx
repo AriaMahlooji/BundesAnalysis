@@ -39,7 +39,7 @@ const SubtitutionEvent = ({ event }) => {
             height="30"
             alt="user"
           ></Image>
-          <span className="text-xs text-green-800">{playerIn}</span>
+          <span className="text-xs text-green-800">{playerIn.length>10?playerIn.split(" ")[playerIn.split(" ").length-1]: playerIn}</span>
         </div>
         <div className="flex flex-1 flex-col">
           <div className="flex justify-center items-center">
