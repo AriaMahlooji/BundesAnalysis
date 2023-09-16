@@ -6,4 +6,5 @@ import java.util.Optional;
 public interface TeamImageService {
     public Optional<TeamImage> findById(String id);
     public Optional<TeamImage> findByName(String name);
+    public TeamImage saveOrUpdate(TeamImage teamImage);
 }

@@ -10,6 +10,7 @@ import { TiCancel } from "react-icons/ti";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { steps } from "framer-motion";
+import { saveOrUploadTeamLogo } from "@/api/UpdateOrSaveTeamLogo";
 
 const TeamsEdit = () => {
   const [teamName, setTeamName] = useState("");
@@ -22,6 +23,24 @@ const TeamsEdit = () => {
     setFoundTeamImage();
   };
 
+  const saveTeamLogo=()=>{
+    const textEncoder = new TextEncoder();
+    saveOrUploadTeamLogo(teamName, teamImage.split("data:image/png;base64,")[1])
+    .then(response => {
+      if (response.ok) {
+        const statusCode = response.status;
+        const statusText = response.statusText;
+        toast.success("Team logo uploaded successfully. " + statusText);
+        cancelUploading();
+      } else {
+        toast.error("Request failed with status:", response.status);
+      } 
+    })
+    .catch(error => {
+      toast.error("Fetch error:", error);
+    });
+  }
+
   let image;
   const onDrop = (acceptedFiles) => {
     image = acceptedFiles[0];
@@ -32,18 +51,6 @@ const TeamsEdit = () => {
       setTeamImage(imageDataUrl);
     };
     reader.readAsDataURL(image);
-
-    // Send a POST request to the Spring Boot API to upload the image
-    /*fetch("/api/images/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        // Handle the API response (success or failure)
-      })
-      .catch((error) => {
-        // Handle errors
-      });*/
   };
 
   useEffect(() => {
@@ -131,7 +138,7 @@ const TeamsEdit = () => {
         </div>
         {teamImage && (
           <div className="flex p-3 items-center justify-center space-x-3 ">
-            <div className="flex items-center justify-center border border-green-500 pr-2 pl-2 rounded-lg hover:cursor-pointer">
+            <div onClick={()=>saveTeamLogo()} className="flex items-center justify-center border border-green-500 pr-2 pl-2 rounded-lg hover:cursor-pointer">
               <PiUploadSimpleBold className="flex-5 text-green-800" />
               <span className="flex-1">Upload</span>
             </div>

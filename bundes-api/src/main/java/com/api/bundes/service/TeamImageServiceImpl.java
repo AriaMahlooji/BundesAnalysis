@@ -28,4 +28,9 @@ public class TeamImageServiceImpl implements TeamImageService{
         name=name.replace("ü","ü");
         return teamImageRepository.findByName(name);
     }
+
+    @Override
+    public TeamImage saveOrUpdate(TeamImage teamImage) {
+       return this.teamImageRepository.saveOrUpdate(teamImage);
+    }
 }

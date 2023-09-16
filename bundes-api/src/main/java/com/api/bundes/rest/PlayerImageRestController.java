@@ -18,12 +18,10 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 public class PlayerImageRestController {
     private PlayerImageService playerImageService;
-    private PlayerImageRepository playerImageRepository;
 
-    public PlayerImageRestController(PlayerImageService playerImageService,
-                                     PlayerImageRepository playerImageRepository) {
+    public PlayerImageRestController(PlayerImageService playerImageService) {
         this.playerImageService = playerImageService;
-        this.playerImageRepository = playerImageRepository;
+
     }
 
     @GetMapping("/playerimages/{name}")
@@ -55,7 +53,7 @@ public class PlayerImageRestController {
         playerImage.setImage(imageData);
 
         // Save or update the PlayerImage entity
-        playerImageRepository.saveOrUpdate(playerImage);
+        playerImageService.saveOrUpdate(playerImage);
 
         return ResponseEntity.ok("Player image uploaded successfully.");
     }

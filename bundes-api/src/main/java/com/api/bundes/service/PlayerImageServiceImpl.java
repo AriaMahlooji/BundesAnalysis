@@ -26,4 +26,9 @@ public class PlayerImageServiceImpl implements PlayerImageService{
     public Optional<PlayerImage> findById(String id) {
         return Optional.ofNullable(playerImageRepository.findById(id).orElse(null));
     }
+
+    @Override
+    public PlayerImage saveOrUpdate(PlayerImage playerImage) {
+        return this.playerImageRepository.saveOrUpdate(playerImage);
+    }
 }
