@@ -47,34 +47,35 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     @Override
-    public EventsResponse getTeamEventsAgainst(Integer id, EventFilter eventFilter, Integer pageSize, Integer pageNumber) {
+    public EventsResponse getTeamEventsAgainst(Integer id, EventFilter eventFilter) {
         List<Integer> matchIds=(matchService.findMatchesAgainst(id, eventFilter.getOpponentsIds(),
                 eventFilter.getSeasons())).stream().map(Match::getId).collect(Collectors.toList());
 
         List<Event> byEvents = eventService.findTeamByEvents(id, matchIds,
                 eventFilter.getEventTitles());
-        List<Event> paginatedByEvents = eventService.paginateEvents(byEvents, pageSize, pageNumber);
-
+        //List<Event> paginatedByEvents = eventService.paginateEvents(byEvents, pageSize, pageNumber);
         List<Event> onEvents = eventService.findTeamOnEvents(id, matchIds,
                 eventFilter.getEventTitles());
-        List<Event> paginatedOnEvents = eventService.paginateEvents(onEvents, pageSize, pageNumber);
+        //List<Event> paginatedOnEvents = eventService.paginateEvents(onEvents, pageSize, pageNumber);
 
-        if(eventFilter.getSide().equals("by")) {
+
+
+       /* if(eventFilter.getSide().equals("by")) {
             EventsResponse eventsResponse = new EventsResponse(paginatedByEvents);
             return eventsResponse;
         }
         if(eventFilter.getSide().equals("on")) {
             EventsResponse eventsResponse = new EventsResponse(paginatedOnEvents);
             return eventsResponse;
-        }
-        else{
+        }*/
+        {
             EventsResponse eventsResponse = new EventsResponse(byEvents, onEvents);
             return eventsResponse;
         }
 
     }
 
-   /* @Override
+
     public EventsDistributionResponse getTeamEventsDistributionAgainst(Integer id, EventFilter eventFilter) {
         EventsResponse eventsResponse = getTeamEventsAgainst(id, eventFilter);
         Integer[] byEventDistribution = getEventDistribution(eventsResponse.getByEvents());
@@ -83,12 +84,9 @@ public class AnalysisServiceImpl implements AnalysisService {
         EventsDistributionResponse eventsDistributionResponse = new EventsDistributionResponse(eventsResponse,
                 byEventDistribution, onEventDistribution);
         return eventsDistributionResponse;
-    }*/
-
-    @Override
-    public EventsDistributionResponse getTeamEventsDistributionAgainst(Integer id, EventFilter eventFilter) {
-        return null;
     }
+
+
 
     public Double calculateDecayEffect(Integer timeDifference, Boolean isSubstitutionInvolved)
     {
@@ -173,21 +171,30 @@ public class AnalysisServiceImpl implements AnalysisService {
                 negativeMetrics );
     }
 
-    /*
-    @Override
-    public List<SubstitutionEvaluation> getSortedSubstitutionsAgainst(Team team, EventFilter eventFilter) {
-        EventsResponse eventsResponse = getTeamEventsAgainst(team.getId(), eventFilter);
-        List<Event> events =eventsResponse.getByEvents();
-        List<SubstitutionEvaluation> substitutionEvaluations = events.stream().map(event ->
-                evaluateSubstitutionEvent(event)).collect(Collectors.toList());
-        Collections.sort(substitutionEvaluations,
-                Comparator.comparingDouble(SubstitutionEvaluation::getEvaluationScore));
-        return substitutionEvaluations;
-    }*/
 
     @Override
-    public List<SubstitutionEvaluation> getSortedSubstitutionsAgainst(Team team, EventFilter eventFilter) {
-        return null;
+    public List<SubstitutionEvaluation> getSortedSubstitutionsAgainst(Team team, EventFilter eventFilter,
+                                                                      Boolean ascending) {
+        EventsResponse eventsResponse = getTeamEventsAgainst(team.getId(), eventFilter);
+
+        System.out.println("eventsResponse");
+        System.out.println(eventsResponse);
+
+        List<Event> events =eventsResponse.getByEvents();
+
+        List<SubstitutionEvaluation> substitutionEvaluations = events.stream().map(event ->
+                evaluateSubstitutionEvent(event)).collect(Collectors.toList());
+        if(!ascending)
+        {
+            Collections.sort(substitutionEvaluations,
+                    Comparator.comparingDouble(SubstitutionEvaluation::getEvaluationScore).reversed());
+        }
+        else
+        {
+            Collections.sort(substitutionEvaluations,
+                    Comparator.comparingDouble(SubstitutionEvaluation::getEvaluationScore));
+        }
+        return substitutionEvaluations;
     }
 
     public List<Team> getTeamsForSeasons(List<String> seasons)
@@ -263,5 +270,14 @@ public class AnalysisServiceImpl implements AnalysisService {
                 setLeagueStandingTeamsLogos(sortedStandingInfo);
 
         return sortedStandingInfoLogosIncluded;
+    }
+
+    @Override
+    public List<SubstitutionEvaluation> paginateSortedSubstitutions(List<SubstitutionEvaluation> subs, Integer pageSize, Integer pageNumber) {
+        if(pageSize > subs.size())
+        {
+            pageSize = subs.size();
+        }
+        return subs.subList((pageNumber-1)*pageSize, Math.min(pageNumber*pageSize, subs.size()));
     }
 }

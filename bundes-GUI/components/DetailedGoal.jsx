@@ -51,8 +51,8 @@ const DetailedGoal = ({ goal }) => {
         <Image
           className="rounded-[50%] h-12 w-12"
           src={`data:image/png;base64,${scorerImage}`}
-          width="30"
-          height="30"
+          width="45"
+          height="45"
           alt="user"
         ></Image>
       </div>

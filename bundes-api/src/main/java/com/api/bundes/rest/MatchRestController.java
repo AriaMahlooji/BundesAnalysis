@@ -3,12 +3,11 @@ package com.api.bundes.rest;
 import com.api.bundes.Entity.Event;
 import com.api.bundes.Entity.Match;
 import com.api.bundes.Entity.Team;
-import com.api.bundes.dto.EventFilter;
-import com.api.bundes.dto.EventResponseForSpecificMinute;
-import com.api.bundes.dto.EventsResponse;
-import com.api.bundes.dto.GoalEngagedPlayers;
+import com.api.bundes.Entity.TeamImage;
+import com.api.bundes.dto.*;
 import com.api.bundes.service.EventService;
 import com.api.bundes.service.MatchService;
+import com.api.bundes.service.TeamImageService;
 import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +23,12 @@ public class MatchRestController {
 
     private MatchService matchService;
     private EventService eventService;
-
-    public MatchRestController(MatchService matchService, EventService eventService) {
+    private TeamImageService teamImageService;
+    public MatchRestController(MatchService matchService, EventService eventService,
+                               TeamImageService teamImageService) {
         this.matchService = matchService;
         this.eventService = eventService;
+        this.teamImageService = teamImageService;
 
     }
 
@@ -46,7 +47,13 @@ public class MatchRestController {
             String errorMessage = "match with id " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
-        return ResponseEntity.ok(match.get());
+
+        MatchResponse matchResponse = new MatchResponse(match.get(),
+                Base64.getEncoder().encodeToString(teamImageService.findByName(match.get().getHomeTeam()
+                                .getName()).get().getImage()),
+                Base64.getEncoder().encodeToString(teamImageService.findByName(match.get().getAwayTeam()
+                                .getName()).get().getImage()));
+        return ResponseEntity.ok(matchResponse);
     }
 
     @GetMapping("/matches/{id}/events")

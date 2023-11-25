@@ -7,7 +7,7 @@ export const useSeason = () => {
 };
 
 export const SeasonProvider = ({ children }) => {
-  const [seasons, setSeasons] = useState(["15/16", "16/17", "17/18", "18/19", "19/20", "20/21", "21/22"]);
+  const [seasons, setSeasons] = useState(["15/16"]);
 
   return (
     <SeasonContext.Provider value={{ seasons, setSeasons }}>

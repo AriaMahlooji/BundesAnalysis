@@ -30,7 +30,7 @@ const Sidebar = ({ children }) => {
               <RxDashboard size={20}/>
             </div>
           </Link>
-          <Link href="/">
+          <Link href="/analysis">
             <div className={` hover:bg-gray-300  my-4 p-3 rounded-lg inline-block ${router.asPath ==="/analysis" ? "bg-gray-400": "bg-gray-100"}`}>
               <BiLineChart size={20}/>
             </div>

@@ -22,7 +22,7 @@ const SubtitutionEvent = ({ event }) => {
         .then((data) => setPlayerOutImage(data.playerImageUrl))
         .catch((error) => console.error("Error fetching data:", error));
     }
-  }, [event.eventDetail.split("In: ")[1].split("\nOut:")[0]]);
+  }, [event.eventDetail]);
 
   return (
     <div
@@ -35,8 +35,8 @@ const SubtitutionEvent = ({ event }) => {
           <Image
             className="rounded-[50%]"
             src={`data:image/png;base64,${playerInImage}`}
-            width="30"
-            height="30"
+            width="45"
+            height="45"
             alt="user"
           ></Image>
           <span className="text-xs text-green-800">{playerIn.length>10?playerIn.split(" ")[playerIn.split(" ").length-1]: playerIn}</span>
@@ -51,8 +51,8 @@ const SubtitutionEvent = ({ event }) => {
           <Image
             className="rounded-[50%]"
             src={`data:image/png;base64,${playerOutImage}`}
-            width="30"
-            height="30"
+            width="45"
+            height="45"
             alt="user"
           ></Image>
           <span className="text-xs text-red-800">{playerOut}</span>

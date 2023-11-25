@@ -11,15 +11,14 @@ import FoulEvent from "./FoulEvent";
 
 Modal.setAppElement("#__next"); // Set the root element for screen readers (replace #__next with your root element id)
 
-const ChosenMatchModal = ({ isOpen, onClose, children }) => {
+const ChosenMatchModal = ({ isOpen, onClose, children, matchId }) => {
   const [sectionToBeShown, setSectionToBeShown] = useState("goals");
   const { chosenMatch, setChosenMatch } = useChosenMatch({});
-  useEffect(() => {
-  }, [chosenMatch]);
+  useEffect(() => {}, [chosenMatch]);
 
   const [events, setEvents] = useState([]);
   useEffect(() => {
-     if (chosenMatch) {
+    if (chosenMatch) {
       getMatchEvents(chosenMatch.match.id)
         .then((response) => response.json())
         .then((data) => setEvents(data))
@@ -36,14 +35,18 @@ const ChosenMatchModal = ({ isOpen, onClose, children }) => {
       overlayClassName="fixed inset-0 bg-black bg-opacity-50"
     >
       <div className="bg-white border border-red-800  rounded-xl  w-1/2 h-3/4 p-3 overflow-auto">
-        <div className="flex flex-col p-3 space-y-2">
-          <div className="flex items-end justify-end">
+        <div className=" flex flex-col p-3 space-y-2">
+          <div className=" flex items-end justify-end">
             <AiOutlineCloseCircle
-              onClick={()=>{onClose();}}
+              onClick={() => {
+                onClose();
+              }}
               className="cursor-pointer text-red-800"
             />
           </div>
-          <div className="flex justify-center items-center">Match highlights</div>
+          <div className=" flex justify-center items-center">
+            Match highlights
+          </div>
           {chosenMatch && (
             <div>
               <div
@@ -129,8 +132,9 @@ const ChosenMatchModal = ({ isOpen, onClose, children }) => {
               </li>
             </ul>
           </div>
+
           {events && sectionToBeShown === "goals" && (
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-2 overflow-auto">
               {events
                 .filter((event) =>
                   ["Goal", "Penalty", "Own goal"].includes(event.title)
@@ -141,7 +145,7 @@ const ChosenMatchModal = ({ isOpen, onClose, children }) => {
             </div>
           )}
           {events && sectionToBeShown === "substitutions" && (
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-2 ">
               {events
                 .filter((event) => ["Substitution"].includes(event.title))
                 .map((event, i) => (
@@ -150,10 +154,14 @@ const ChosenMatchModal = ({ isOpen, onClose, children }) => {
             </div>
           )}
           {events && sectionToBeShown === "fouls" && (
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-2 overflow-auto">
               {events
-                .filter((event) => ["Yellow card","2nd Yellow card (Red)","Red card"].includes(event.title))
-                .map((event,i) => (
+                .filter((event) =>
+                  ["Yellow card", "2nd Yellow card (Red)", "Red card"].includes(
+                    event.title
+                  )
+                )
+                .map((event, i) => (
                   <FoulEvent key={i} event={event}></FoulEvent>
                 ))}
             </div>

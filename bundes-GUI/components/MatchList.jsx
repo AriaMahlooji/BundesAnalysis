@@ -20,7 +20,7 @@ const MatchList = ({ matches }) => {
     return;
   }
   return (
-    (<div className="rounded-lg p-2 bg-white space-y-2 flex flex-col">
+    (<div className="rounded-lg p-3 bg-white space-y-2 flex flex-col">
       <h2 className="flex justify-center">Matches</h2>
       <div className="flex items-center justify-between">
         {pageNumber !== 1 && (

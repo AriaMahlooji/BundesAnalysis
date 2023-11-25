@@ -15,6 +15,7 @@ import { useFinalStatus } from "@/context APIs/FinalStatusContext";
 import { useGoal } from "@/context APIs/MatchContext copy";
 import { useSide } from "@/context APIs/SideContext";
 import { useMatchOrGoal } from "@/context APIs/MatchOrGoalContext";
+import { BiChevronDown } from "react-icons/bi";
 
 const TeamsStanding = ({ standingInfo }) => {
   const { pageNumber, setPageNumber } = usePageNumber();
@@ -63,12 +64,15 @@ const TeamsStanding = ({ standingInfo }) => {
       <div className="flex flex-col">
         <div className="w-full m-auto p-4 border rounded-lg bg-white overflow-y-auto flex flex-col">
           <div className="mb-6 flex">
-            <Dropdown className="bg-gray-300 rounded-lg border border-gray-500">
+            <Dropdown className="bg-gray-300 rounded-lg border border-gray-500 hover:cursor-pointer">
               <DropdownTrigger>
-                <Button className="border bg-gray-200 border-gray-500 rounded-lg pr-3 pl-3">
-                  {" "}
-                  Season: {seasons.length > 1 ? "All" : seasons}{" "}
-                </Button>
+                <div className="flex justify-center items-center border bg-gray-200 border-gray-500 rounded-lg pr-3 pl-3">
+                  <Button>
+                    {" "}
+                    Season: {seasons.length > 1 ? "All" : seasons}{" "}
+                  </Button>
+                  <BiChevronDown className="hover:cursor-pointer" size={30} />
+                </div>
               </DropdownTrigger>
               <DropdownMenu
                 onAction={(key) => setChosenSeason(key)}
@@ -76,7 +80,12 @@ const TeamsStanding = ({ standingInfo }) => {
                 aria-label="Static Actions"
               >
                 {seasonsList.map((season, i) => (
-                  <DropdownItem className="p-1 hover:bg-white hover:rounded-lg" key={season}>{season}</DropdownItem>
+                  <DropdownItem
+                    className="p-1 hover:bg-white hover:rounded-lg"
+                    key={season}
+                  >
+                    {season}
+                  </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
@@ -196,7 +205,7 @@ const TeamsStanding = ({ standingInfo }) => {
                         }}
                         className="text-sm flex items-center justify-center rounded hover:cursor-pointer hover:bg-red-200"
                       >
-                        {" "+info.receivedGoalsCount}
+                        {" " + info.receivedGoalsCount}
                       </div>
                     </div>
                     <div className="text-sm flex items-center justify-center">

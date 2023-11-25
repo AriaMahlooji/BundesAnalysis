@@ -3,20 +3,15 @@ import Image from "next/image";
 import { FiInfo } from "react-icons/fi";
 import { getMatchFinalStatusFor } from "@/functions/getMatchFinalStatusFor";
 import { useChosenMatch } from "@/context APIs/ChosenMatchContext";
+import { BsFillCircleFill } from "react-icons/bs";
 
 const Match = ({ match, chosenTeamId }) => {
-  const {chosenMatch, setChosenMatch} = useChosenMatch();
+  const { chosenMatch, setChosenMatch } = useChosenMatch();
 
   return (
-    <div>
+    <div onClick={() => {setChosenMatch(match);}}>
       <div
-        className={`rounded-lg flex justify-between items-center p-1 ${
-          getMatchFinalStatusFor(match, chosenTeamId) === "won"
-            ? "bg-green-200"
-            : getMatchFinalStatusFor(match, chosenTeamId) === "lost"
-            ? "bg-red-200"
-            : "bg-gray-200"
-        }`}
+        className={`rounded-lg flex justify-between items-center p-1 bg-gray-200 transition-transform hover:scale-105 hover:shadow-lg hover:cursor-pointer`}
       >
         <div className="flex flex-col flex-1  items-center justify-center">
           <Image
@@ -37,7 +32,6 @@ const Match = ({ match, chosenTeamId }) => {
             <div>-</div>
             <div>{match.match.awayTeamScore}</div>
           </div>
-          <FiInfo onClick={()=>{setChosenMatch(match); }} className="hover:cursor-pointer transition-transform transform hover:scale-110" />
         </div>
         <div className="flex flex-col flex-1 items-center justify-center ">
           <div className="">
@@ -50,6 +44,17 @@ const Match = ({ match, chosenTeamId }) => {
             ></Image>
           </div>
           <div>{match.match.awayTeam.teamName}</div>
+        </div>
+        <div className="flex flex-col flex-1/2 items-center justify-center">
+          <BsFillCircleFill
+            color={
+              getMatchFinalStatusFor(match, chosenTeamId) === "won"
+                ? "green"
+                : getMatchFinalStatusFor(match, chosenTeamId) === "lost"
+                ? "red"
+                : "gray"
+            }
+          />
         </div>
       </div>
     </div>

@@ -26,21 +26,21 @@ const FoulEvent = ({ event }) => {
       }`}
     >
       <div className="flex w-1/2 justify-between items-center pr-6 pl-6 p-3 pb-3   bg-gray-200 rounded-lg space-x-3">
-        <div className="text-xs flex flex-col items-center justify-center">
+        <div className="text-xs flex flex-1 flex-col items-center justify-center">
           <Image
             className="rounded-[50%]"
             src={`data:image/png;base64,${playerImage}`}
-            width="30"
-            height="30"
+            width="45"
+            height="45"
             alt="user"
           ></Image>
           <span>{playerName.length>10?playerName.split(" ")[playerName.split(" ").length-1]: playerName}</span>
         </div>
-        <div className=" p-2 space-y-2 text-xs flex flex-col items-center justify-center">
+        <div className=" p-2 space-y-2 text-xs flex flex-1 flex-col items-center justify-center">
           <LuAlarmClock className=" text-lg " />
           <span>{event.eventDetail.split("\n")[0]}</span>
         </div>
-        <div className="text-lg flex flex-col items-center justify-center">
+        <div className="text-lg flex flex-1 flex-col items-center justify-center">
           {event.title === "Yellow card" && (
             <TbRectangleVerticalFilled className="text-yellow-400" />
           )}

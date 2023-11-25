@@ -18,9 +18,11 @@ import ChosenMatchModal from "@/components/ChosenMatchModal";
 import { useChosenMatch } from "@/context APIs/ChosenMatchContext";
 import DetailedGoalList from "@/components/DetailedGoalList";
 import { useGoal } from "@/context APIs/MatchContext copy";
-import { getEvents } from "@/data_fetchers/home_page_fetchers/event_fetcher";
+import { getPaginatedEvents } from "@/data_fetchers/home_page_fetchers/event_fetcher";
 import { useSide } from "@/context APIs/SideContext";
 import { useMatchOrGoal } from "@/context APIs/MatchOrGoalContext";
+import ChooseOpponentModal from "@/components/ChooseOpponentsModal";
+import { useOpponentsModalIsOpen } from "@/context APIs/OpponentModalVisibilityContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,15 +32,13 @@ export default function Home() {
   const { teamId, setTeamId } = useTeamId();
   const { finalStatus, setFinalStatus } = useFinalStatus();
   const { chosenMatch, setChosenMatch } = useChosenMatch();
-  const {goals, setGoals} = useGoal();
-  const {side, setSide}= useSide();
-  const {matchOrGoal, setMatchOrGoal} = useMatchOrGoal();
+  const { goals, setGoals } = useGoal();
+  const { side, setSide } = useSide();
+  const { matchOrGoal, setMatchOrGoal } = useMatchOrGoal();
 
-  useEffect(() => {
-  }, [teamId]);
+  useEffect(() => {}, [teamId]);
 
-  useEffect(() => {
-  }, [seasons]);
+  useEffect(() => {}, [seasons]);
 
   useEffect(() => {
     getStandings(seasons)
@@ -58,13 +58,18 @@ export default function Home() {
   }, [pageNumber, seasons, teamId, finalStatus]);
 
   useEffect(() => {
-    getEvents(teamId, pageNumber, seasons, side, ["Goal", "Own goal", "Penalty"])
+    getPaginatedEvents(teamId, pageNumber, seasons, side, [
+      "Goal",
+      "Own goal",
+      "Penalty",
+    ])
       .then((response) => response.json())
       .then((data) => setGoals(data.events))
       .catch((error) => console.error("Error fetching data:", error));
   }, [pageNumber, seasons, teamId, side]);
 
   const [chosenMatchModalIsOpen, setChosenMatchIsOpen] = useState(false);
+
   useEffect(() => {
     if (chosenMatch) {
       setChosenMatchIsOpen(true);
@@ -77,10 +82,12 @@ export default function Home() {
     setChosenMatchIsOpen(true);
   };
 
-  const closeModal = () => {
+  const closeChosenMatchModal = () => {
     setChosenMatchIsOpen(false);
     setChosenMatch();
   };
+
+  
 
   return (
     <>
@@ -92,20 +99,20 @@ export default function Home() {
       </Head>
 
       <main className="bg-gray-200 min-h-screen">
-        <Header title={"Home"}></Header>
-        <TopCards />
         <div className="border p-4 grid md:grid-cols-3 grid-cols-1 gap-4">
           <div className="col-span-2">
             <TeamsStanding standingInfo={standingData} />
           </div>
           <SideContent title="Matches">
-            {matchOrGoal ==="goal" && <DetailedGoalList goals={goals}/>}
-            {matchOrGoal ==="match" && <MatchList matches={matches}></MatchList>}
+            {matchOrGoal === "goal" && <DetailedGoalList goals={goals} />}
+            {matchOrGoal === "match" && (
+              <MatchList matches={matches}></MatchList>
+            )}
           </SideContent>
         </div>
         <ChosenMatchModal
           isOpen={chosenMatchModalIsOpen}
-          onClose={closeModal}
+          onClose={closeChosenMatchModal}
         ></ChosenMatchModal>
       </main>
     </>

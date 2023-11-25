@@ -109,19 +109,46 @@ public class TeamRestController {
     }
     @PutMapping("/teams/{id}/matches/against/events")
     public ResponseEntity<?> getTeamEventsAgainst(@PathVariable Integer id,
-                                                  @RequestParam(defaultValue = "0") Integer pageSize,
-                                                  @RequestParam(defaultValue = "20") Integer pageNumber,
                                                    @RequestBody EventFilter eventFilter)
     {
         Optional<Team> team = teamService.findById(id);
-        if(team.isEmpty())
-        {
+        if(team.isEmpty()) {
             String errorMessage = "Team with id " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
-        return ResponseEntity.ok(this.analysisService.getTeamEventsAgainst(id, eventFilter, pageSize, pageNumber));
+        return ResponseEntity.ok(this.analysisService.getTeamEventsAgainst(id, eventFilter));
     }
-    @GetMapping("/teams/{id}/matches/against/events/distribution")
+
+    @PutMapping("/teams/{id}/matches/against/paginatedevents")
+    public ResponseEntity<?> getPaginatedTeamEventsAgainst(@PathVariable Integer id,
+                                                  @RequestParam(defaultValue = "0") Integer pageSize,
+                                                  @RequestParam(defaultValue = "20") Integer pageNumber,
+                                                  @RequestBody EventFilter eventFilter)
+    {
+        Optional<Team> team = teamService.findById(id);
+        if(team.isEmpty()) {
+            String errorMessage = "Team with id " + id + " not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        }
+        EventsResponse eventsResponse = this.analysisService.getTeamEventsAgainst(id, eventFilter);
+        if(eventFilter.getSide().equals("by")) {
+            List<Event> paginatedByEvents = eventService.paginateEvents(eventsResponse.getByEvents(),
+                    pageSize, pageNumber);
+
+            return ResponseEntity.ok(new EventsResponse(paginatedByEvents));
+        }
+        if(eventFilter.getSide().equals("on")) {
+            List<Event> paginatedOnEvents = eventService.paginateEvents(eventsResponse.getOnEvents(),
+                    pageSize, pageNumber);
+
+            return ResponseEntity.ok(new EventsResponse(paginatedOnEvents));
+        }
+        List<Event> paginatedEvents = eventService.paginateEvents(eventsResponse.getEvents(),
+                pageSize, pageNumber);
+
+        return ResponseEntity.ok(new EventsResponse(paginatedEvents));
+    }
+    @PutMapping("/teams/{id}/matches/against/events/distribution")
     public ResponseEntity<?> getTeamEventsDistributionAgainst(@PathVariable Integer id,
                                                        @RequestBody EventFilter eventFilter)
     {
@@ -148,19 +175,24 @@ public class TeamRestController {
 
     }
 
-    @GetMapping("/teams/{id}/sortedsubstitutions")
+    @PutMapping("/teams/{id}/sortedsubstitutions")
     public ResponseEntity<?> getSortedSubstitutionsAgainst(@PathVariable Integer id,
-                                                              @RequestBody EventFilter eventFilter)
+                                                           @RequestParam(defaultValue = "false") Boolean ascending,
+                                                           @RequestParam(defaultValue = "10") Integer pageSize,
+                                                           @RequestParam(defaultValue = "1") Integer pageNumber,
+                                                           @RequestBody EventFilter eventFilter)
     {
         eventFilter.setEventTitles(Arrays.asList("Substitution"));
         Optional<Team> team = teamService.findById(id);
-        if(team.isEmpty())
-        {
+        if(team.isEmpty()) {
             String errorMessage = "Team with id " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
 
-        return ResponseEntity.ok(analysisService.getSortedSubstitutionsAgainst(team.get(), eventFilter));
+        List<SubstitutionEvaluation> evaluatedSubstitutions = analysisService.
+                getSortedSubstitutionsAgainst(team.get(),eventFilter, ascending);
+        return ResponseEntity.ok(analysisService.paginateSortedSubstitutions(evaluatedSubstitutions,
+                pageSize, pageNumber));
     }
 
     @GetMapping("/teams/{id}/getmatchesfinalresult")
